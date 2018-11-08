@@ -1,0 +1,46 @@
+#!/bin/sh
+# A very simple script using OutGuess to find an image that yields
+# the best embedding.
+# (C) 1999 Niels Provos
+FILES=*.jpg
+MESSAGE=/tmp/fortune
+TMPNAME="out.$$.jpg"
+OUTPUT="out.jpg"
+ARGS="-d $MESSAGE"
+OUTGUESS="outguess"
+BEST=0
+WORST=0
+NAME="no name"
+
+if [ ! -f "$MESSAGE" ] ; then
+	echo "The file $MESSAGE does not exist"
+	exit
+fi
+
+for name in $FILES
+do
+	echo -n "$name "
+	RESULT=`$OUTGUESS $ARGS $name $TMPNAME 2>&1 |grep "^Total" | awk '{print $4}'`
+	if [ -z "$RESULT" ] ; then
+		rm $TMPNAME	
+		echo "not possible to embed data"
+		continue;
+	else
+		echo "Bits changed $RESULT"
+	fi
+	if [ $WORST -eq 0 -o $RESULT -gt $WORST ] ; then
+		WORST=$RESULT
+	fi
+	if [ $BEST -eq 0 -o $RESULT -lt $BEST ] ; then
+		BEST=$RESULT
+		NAME=$name
+		mv $TMPNAME $OUTPUT
+		echo NEW best image: $name
+	else	
+		rm $TMPNAME
+	fi
+done
+
+echo Best data object was $NAME with $BEST. Worst result was $WORST.
+
+

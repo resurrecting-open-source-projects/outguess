@@ -1,0 +1,163 @@
+
+StirMark 1.0
+------------
+
+Markus Kuhn <Markus.Kuhn@cl.cam.ac.uk> -- 1997-11-10
+
+
+StirMark is a generic tool for simple robustness testing of image
+watermarking algorithms and other steganographic techniques. It can be
+applied to photographic digital images and it will distort the
+watermark of too simplistic marking techniques such that the embedded
+watermark or steganographic message cannot any more be detected and
+decoded from the result image.
+
+StirMark is freely available under the GNU General Public Licence in
+full portable ISO C source code from
+
+  http://www.cl.cam.ac.uk/~mgk25/stirmark/
+
+StirMark reads and writes arbitrary images in the PGM and PPM file
+formats as they are used in Jef Poskanzer's pbmplus Extended Portable
+Bitmap Toolkit. These are trivially simple file formats, and the
+various PBM toolkits contain converters between these formats and
+practically any other commonly used graphics file format.  This way,
+StirMark can be easily used to process any format on any platform.
+
+PBM tools are for instance available from
+
+  ftp://ftp.wustl.edu/graphics/graphics/packages/pbmplus/pbmplus10dec91.tar.Z
+  ftp://gatekeeper.dec.com/.b/X11-contrib/pbmplus10dec91.tar.Z
+  ftp://oak.oakland.edu/pub/msdos/graphics/pbmp191d.zip
+
+but you'll need these tools only if you do not already have other
+image processing software that can handle the PPM or PGM file formats.
+
+You can specify an input and an output file name in the command
+line. If you omit any of those, stdin and stdout are used instead
+respectively.
+
+The available command line options (normally not needed, for experts
+only) are
+
+  -i<float>   The number of pixel distances that the corner of the target
+              image is allowed to be inside the original image. If the
+              number is followed by %, then the maximum corner shift
+              is defined as a percentage of the image width or height,
+              whichever is smaller. Default is -i2.0%.
+
+  -o<float>   The number of pixel distances that the corner of the target
+              image is allowed to be outside the original image
+              (default 0.7). Sample values taken from outside the
+              original image are extrapolated. You can also specify a
+              percentage as with -i, but this is normally not useful
+              as -o values much higher than 1 cause mostly useless
+              extrapolations.
+
+  -d<float>   The maximum byte value by which any of the RGB values
+              of any pixel is allowed to deviate from the original
+              value (default 1.5).
+
+  -n<int>     Specify the maximum distance of a non-zero impulse response
+              for the Nyquist lowpass interpolation filter (default
+              6). Runtime depends quadratic on this parameter!
+
+  -l          Use a simple linear interpolation instead of a
+              Nyquist sinc lowpass filter. This is much faster but
+              blurs the image somewhat.
+
+  -s<int>     Seed value for the random number generator. If you do
+              systematic measurements with StirMark, then repeat the
+              runs with different -s values (e.g. from -s1 to -s100),
+              to get significant results regarding the probability with
+              which StirMark breaks your steganographic technique.
+
+  -r<float>   Apply a lowpass filter to the image. The number indicates,
+              which fraction of the spectrum you want to let through.
+              For instance with -r1.0 (default), you do not filter
+              anything as the cutoff frequency is half the sampling
+              frequency, which is according to the sampling theorem
+              the highest frequency your image can contain. With -r0.2
+              you preserve only the lowest fifth of all frequency
+              components. You can also write -rx<float> and -ry<float>
+              to specify horizontal and vertical cutoff frequencies
+              separately. If the specified number is negative, you
+              will get a highpass filter (e.g., -rx-0.3 removes the
+              lowest 30% of the spectrum from the image). With the
+              highpass filter, a DC offset (50% white) will be added
+              to avoid underflows. Option -r was mostly added because
+              it was easy to do and in order to allow to use StirMark
+              also for some other image processing purposes than just
+              removing watermarks.
+
+Normally you do not have to use any of those options and you should
+try the default values first. If this doesn't remove the watermark,
+then the embedding algorithm is not too bad and you can try to
+increase the -i value to get a stronger geometric transform. Then try
+higher -d values to get a more significant color transform or -r with
+a value slightly below 1.0 to blurr the image somewhat or both. If you
+want no geometric transform at all, set -i0 and -o0. If you think,
+StirMark is too slow then try lower values for -n or try -l instead.
+
+For example
+
+   stirmark -i0 -o0 -d0 test.ppm output.ppm
+
+does not modify the image at all.
+
+StirMark basically simulates a resampling process, i.e. it introduces
+the same kind of errors into an image that you would expect if you
+printed an image on a high-quality printer and then scan the image
+again with a high-quality scanner. The algorithm applies a minor
+geometric distortion, i.e. the image is slightly stretched, sheared,
+shifted, and/or rotated by an unnoticeable random amount and then
+resampled using Nyquist (or with -l bi-linear) interpolation. In
+addition, a transfer function that introduces a small and smoothly
+distributed error into all sample values is applied, which acts like a
+small non-linear analog/digital converter imperfection typically found
+in scanners and display devices.
+
+StirMark introduces a practically unnoticeable quality loss in the
+image if it is applied only once. However after a few iterated
+applications of the algorithm, the image degradation becomes soon very
+noticeable. This makes StirMark (especially the -d option) also a
+model for algorithms that can be applied to artificially degrade
+images on replay to get rid of the lossless-copying property of
+digital multimedia objects.
+
+StirMark is a generic steganographic attack tool in that it is not
+targeted against any specific steganographic algorithm. I hope to
+establish with StirMark a reasonable minimum robustness requirement
+for steganographic image processing tools, i.e. if information
+embedded by an algorithm into an image does not survive the StirMark
+process, then the steganographic technique used should considered to
+be unacceptably easy to break.
+
+Suggestions for improving this software are always welcome. I am also
+interested in robustness test results obtained by processing with
+StirMark images that were marked with various available watermarking
+tools.
+
+Surprisingly, first experiences with various watermarking tools show
+that the watermarks of *all* tools we have been able to locate until
+today (DigiMark, JK_PGS, SysCop, SureSign, etc.) can be removed more
+or less reliably by StirMark, especially if StirMark is followed by a
+medium quality JPEG compression. See also Fabien Petitcolas'
+<fapp2@cl.cam.ac.uk> Web pages about steganography for more
+information:
+
+  http://www.cl.cam.ac.uk/~fapp2/steganography/
+
+A paper describing among other things our experiences with StirMark in
+more detail is awaiting publication.
+
+Funding acknowledgement: The author of StirMark is a PhD student
+supported by a European Commission TMR Marie-Curie grant and is
+interested in robustness properties of information protection
+mechanisms.
+
+Markus
+
+-- 
+Markus G. Kuhn, Security Group, Computer Lab, Cambridge University, UK
+Internet mail: mkuhn at acm.org, Web: <http://www.cl.cam.ac.uk/~mgk25>

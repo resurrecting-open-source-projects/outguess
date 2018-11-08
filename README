@@ -1,0 +1,191 @@
+OutGuess 0.13b
+--------------
+1999-08-06 - Niels Provos <provos@citi.umich.edu>
+
+OutGuess is a universal steganographic tool that allows the insertion
+of hidden information into the redundant bits of data sources.  The
+nature of the data source is irrelevant to the core of OutGuess.  The
+program relies on data specific handlers that will extract redundant
+bits and write them back after modification.  In this version the PNM
+and JPEG image formats are supported.  In the next paragraphs, images
+will be used as concrete example of data objects, though OutGuess can
+use any kind of data, as long as a handler is provided.
+
+OutGuess is available under the BSD software license.  Please see each
+source file for its respective license.  OutGuess was written in
+Germany, and CONTAINS CRYPTOGRAPHIC FUNCTIONS.
+
+Steganography is the art of hiding the fact that communication is
+happening. Classical steganography systems depend on keeping the
+encoding system secret, but modern steganography should only be
+detectable if a secret information, e.g. a secret key is known.  But
+because of their invasive nature they leave detectable traces within
+an image's characteristics, e.g. its Fourier signature, and hence
+allow an eavesdropper to detect images which have been modified, and
+thus giving away the fact that secret communication is happening.  The
+secret of the information is not degraded, its hidden nature is
+revealed, defeating the whole purpose of Steganography.
+
+A more processor- and space-intensive alternative is to match existing
+images against the source data in order to minimize the number of
+modifications required to express the original message.
+
+OutGuess uses a generic iterator object to select which bits in the
+data should be modified.  A seed can be used to modify the behavior
+of the iterator. It is embedded in the data along with the rest of the
+message.  By altering the seed, OutGuess tries to find a sequence of
+bits that minimizes the number of changes in the data that have to be
+made.
+
+A bias is introduced that favors the modification of bits that were
+extracted from a high value, and tries to avoid the modification of
+bits that were extracted from a low value.
+
+A sample output from OutGuess is as follows:
+
+Reading ....
+Extracting usable bits ...
+JPEG compression quality set to 91
+Encoded data: 1178
+Finding best embedding...
+New best:     0:  4709(49.8%), bias  4332(0.92), saved:     3
+New best:     5:  4700(49.7%), bias  4290(0.91), saved:    12
+New best:     7:  4663(49.3%), bias  4217(0.90), saved:    49
+New best:    17:  4644(49.1%), bias  4188(0.90), saved:    68
+New best:   121:  4660(49.3%), bias  4169(0.89), saved:    52
+121, 8829: Embedding data: 9424 in 81406
+Bits embedded: 9456, changed: 4660(49.3%), bias: 4169, tot: 81320, skip: 71864
+Total bits changed: 8829 (changed 4660 + bias 4169)
+Storing bitmap into data...
+Writing ....
+
+The simple example script "seek_script" uses OutGuess to select an image
+that fits the data we want to hide the best, yielding the lowest number
+of changed bits.  Because we do not care about the actual content of
+the cover data we send, this is a very viable approach.
+
+Additionally, OutGuess allows to hide an arbitrary number of messages
+in the data.  Thus it also provides plausible deniablity.  It keeps
+track of the bits that have been modified previously and locks them.
+A (23,12,7) Golay code is used for error correction to tolerate
+collisions on locked bits.  Artifical errors are introduced to avoid
+modifying bits that have a hight bias.
+
+IN THIS VERSION, OUTGUESS ONLY INSERTS TWO DIFFERENT MESSAGES. THE
+RELEASE VERSION WILL HANDLE AN ARBITRARY NUMBER.
+
+The available command line options are, capital letters specify options
+for the second message,
+
+  -k <key>	The secret key used to encrypt and hide the message in
+		the provided data.
+
+  -d <filename>	The filename specifying the message to be hidden in the
+		data.
+
+  -i <n>	The upper limit in finding an optimal iterator seed. The
+		maximum value for the limit is 65536.
+
+  -s <n>	The initial seed the iterator object uses for
+		selecting bits in the redundant data. If no upper limit
+		is specified, the iterator will use this seed without
+		searching for a more optimal embedding.
+
+  -e		Use error correction for data encoding and decoding.
+
+Other options that apply to the general executions of OutGuess are
+
+  -r		Retrieve a message from a data object.  If this option
+		is not specified, OutGuess will embed messages.
+
+  -x <n>	If the second key does not create an iterator object
+		that is successful in embedding the data, the program
+		will derive up to <n> new keys.
+
+  -p "param"	Passes a string as parameter to the destination data
+		handler. For the JPEG image format, this is the
+		compression quality, it can take values between 75 and
+		100.  The higher the quality the more bits to hide 
+		a message in the data are available.
+
+  -t		Collect statistics about redundant bit usage. Repeated
+		't's increase output level.  Probably meaningless to
+		most.
+
+For embedding messages, you need to specify a source and a destination
+filename.  OutGuess determines the data format by the filename extension.
+If no filenames are specified OutGuess operates as filter and assumes 
+the PPM data format.
+
+For example
+
+   outguess -k "my secret pass phrase" -d hidden.txt monkey.jpg out.jpg
+
+embeds the message 'hidden.txt' into the 'monkey.jpg' image.  In the
+other direction
+
+   outguess -k "my secret pass phrase" -r out.jpg message.txt
+
+will retrieve the hidden message from the image.
+
+If you want to embed a second message, use
+
+   outguess -k "secret1" -d hide1.txt -E -K "secret2" -D hide2.txt \
+   monkey.jpg out.jpg
+
+OutGuess will first embed "hide1.txt" and then "hide2.txt" on top of
+it, using error correcting codes.  The second message "hide2.txt" can
+be retrieved with
+
+   outguess -k "secret2" -e -r out.jpg message.txt
+
+As this is a BETA version, I would like you to give me feedback on
+the usefulness of OutGuess.
+
+Installation
+------------
+OutGuess has been modified to use autoconf, a normal installation
+should require only
+
+1. ./configure && make
+
+If your system is not supported, trying building by hand as follows
+
+1. Install the JPEG-6b libjpeg.a library and patch it with
+   jpeg-6b-steg.diff.  You can obtain the source from
+   ftp://ftp.uu.net/graphics/jpeg/jpegsrc.v6b.tar.gz.
+   The Makefile expects the library to be at ../jpeg-6b.
+
+2. Edit the Makefile and type make
+
+OutGuess has only been tested on OpenBSD, Linux, Solaris and AIX.
+
+BUGS:
+-----
+Not all the redundant data available in the JPEG encoding is used,
+this is due to a problem when reconstructing the Huffman coefficients.
+I have seen cases when two MCU blocks have only the first coefficient
+assigned, that the coefficents are the same and do not represent
+the Huffman coefficients that were used when the image was created,
+and thus getting the bit stream out of sync.  So I just ignore the
+first coefficent always.
+
+Acknowledgments:
+----------------
+OutGuess uses code from, attributions can also be found in the sources,
+
+ Markus Kuhn's Stirmark software, see STIRMARK-README.
+ 
+ the Independent JPEG Group's JPEG software, see JPEG_README.
+ 
+ the Arc4 random number generator for OpenBSD, (c) 1996 by
+ David Mazieres <dm@lcs.mit.edu>.
+
+ free MD5 code by Colin Plumb.
+
+For determining the redundant bits out of a JPEG image, the jpeg-jsteg-v4
+patches by Derek Upham <upham@cs.ubc.ca> were helpful.
+
+Thanks to
+  Dug Song <dugsong@monkey.org> for helping with configure,
+  Andrew Reiter <andrewr@rot26.net> for testing on Solaris.
