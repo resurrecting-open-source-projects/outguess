@@ -37,6 +37,8 @@
 
 void init_JPEG_handler(char *parameters);
 
+int preserve_jpg(bitmap *, int);
+
 void write_JPEG_file (FILE *outfile, image *image);
 image *read_JPEG_file (FILE *infile);
 

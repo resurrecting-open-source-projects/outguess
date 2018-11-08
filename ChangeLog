@@ -1,3 +1,13 @@
+OutGuess 0.2
+--------------
+2000-01-20 - Niels Provos <provos@citi.umich.edu>
+ - Use statistical corrections to defend against steganalysis.
+
+2000-04-01 - Niels Provos <provos@citi.umich.edu>
+ - A lot of cleanup.
+ - Use all DCT coefficients for JPG now.  This version is not any more
+   compatible with the previous versions.
+
 OutGuess 0.13b
 --------------
 1999-08-06 - Niels Provos <provos@citi.umich.edu>

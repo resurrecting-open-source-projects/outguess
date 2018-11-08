@@ -104,13 +104,14 @@ arc4_addrandom(struct arc4_stream *as, u_char *dat, int datlen)
 }
 
 void
-arc4_initkey(struct arc4_stream *as, u_char *key, int keylen)
+arc4_initkey(struct arc4_stream *as, char *type, u_char *key, int keylen)
 {
   MD5_CTX ctx;
   u_char digest[16];
 
   /* Bah, we want bcrypt */
   MD5Init(&ctx);
+  MD5Update(&ctx, type, strlen(type));
   MD5Update(&ctx, key, keylen);
   MD5Final(digest, &ctx);
 

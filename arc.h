@@ -53,6 +53,6 @@ void arc4_init(struct arc4_stream *as);
 u_int8_t arc4_getbyte(struct arc4_stream *as);
 u_int32_t arc4_getword(struct arc4_stream *as);
 void arc4_addrandom(struct arc4_stream *as, u_char *dat, int datlen);
-void arc4_initkey(struct arc4_stream *as, u_char *key, int keylen);
+void arc4_initkey(struct arc4_stream *as, char *type, u_char *key, int keylen);
 
 #endif /* _ARC_H */

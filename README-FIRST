@@ -1,8 +1,0 @@
-Originally, Niels Provos wrote outguess and released its versions in
-the following order: 0.1, 0.11, 0.12, 0.13, 0.13b and 0.2.
-
-I could find 0.13b and 0.2 versions only in Internet. Note that 0.2 is
-the latest version but 0.2 < 0.13b. So, I tagged 0.13b as 0.0.13b to
-avoid conflicts.
-
- -- Joao Eriberto Mota Filho <eriberto@eriberto.pro.br>  Thu, 08 Nov 2018 21:17:11 -0200

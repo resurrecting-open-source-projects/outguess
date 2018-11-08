@@ -24,7 +24,7 @@ dnl Checks for libraries.
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h unistd.h md5.h)
+AC_CHECK_HEADERS(fcntl.h unistd.h md5.h err.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
@@ -37,17 +37,38 @@ dnl Checks for library functions.
 AC_FUNC_MMAP
 AC_CHECK_FUNCS(strrchr memcpy)
 
-AC_CHECK_FUNC(strcasecmp, ,
+AC_CHECK_FUNC(strcasecmp,
+	AC_DEFINE(HAVE_STRCASECMP),
 	AC_MSG_RESULT(File extensions will be case sensitive!)
 	     )
 
-AC_CHECK_FUNC(snprintf, ,
-	AC_MSG_RESULT(will use sprintf instead you have a bad system)
+AC_CHECK_FUNC(snprintf, 
+	AC_DEFINE(HAVE_SNPRINTF),
+	AC_MSG_RESULT(will use sprintf instead, you have a bad system)
 	     )
 
-dnl Check if we need to compile md5c
-AC_SUBST(MD5OBJ)
-AC_CHECK_FUNC(MD5Init, , CFLAGS="$CFLAGS -I."; MD5OBJ="md5c.o")
+
+AC_SUBST(LIBMISSING)
+AC_SUBST(MISSINGOBJ)
+dnl Check if we need to compile md5
+needmd5=no
+needincmiss=no
+AC_CHECK_FUNCS(MD5Update, , [needmd5=yes; needincmiss=yes])
+if test $needmd5 = yes; then
+   LIBMISSING="$LIBMISSING md5.o"
+   MISSINGOBJ="$MISSINGOBJ missing/md5.c"
+fi
+dnl Check if there is err()
+neederr=no
+AC_CHECK_FUNCS(warnx, , [neederr=yes; needincmiss=yes])
+if test $neederr = yes; then
+   LIBMISSING="$LIBMISSING err.o"
+   MISSINGOBJ="$MISSINGOBJ missing/err.c"
+fi
+
+if test $needincmiss = yes; then
+   CFLAGS="$CFLAGS -Imissing"
+fi
 
 AC_CONFIG_SUBDIRS(jpeg-6b-steg)
 

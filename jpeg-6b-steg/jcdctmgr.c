@@ -257,7 +257,7 @@ forward_DCT (j_compress_ptr cinfo, jpeg_component_info * compptr,
 	  temp += qval>>1;	/* for rounding */
 	  DIVIDE_BY(temp, qval);
 	}
-	output_ptr[i] = (JCOEF) i ? steg_use_bit(temp) : temp;
+	output_ptr[i] = steg_use_bit(temp);
       }
     }
   }

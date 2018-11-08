@@ -1,5 +1,5 @@
 /*
- * Copyright 1999 Niels Provos <provos@citi.umich.edu>
+ * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,8 @@ handler jpg_handler = {
 	read_JPEG_file,
 	write_JPEG_file,
 	bitmap_from_jpg,
-	bitmap_to_jpg
+	bitmap_to_jpg,
+	preserve_jpg
 };
 
 static int jpeg_state;
@@ -64,6 +65,22 @@ static int quality = 75;
 static int jpeg_eval;
 static int eval_cnt;
 
+static int dctmin;
+static int dctmax;
+
+extern int steg_foil;		/* Statistics keps in main program */
+extern int steg_foilfail;
+
+#define DCTMIN		100
+#define DCTENTRIES	256
+static int dctadjust[DCTENTRIES];
+
+#define DCTFREQRANGE	5000	/* Number of bits for which the below holds */
+#define DCTFREQREDUCE	33	/* Threshold is /REDUCE, 1% for 100 */
+#define DCTFREQMIN	2	/* At least 5 coeff in cache */
+static int dctfreq[DCTENTRIES];
+static int dctpending;
+
 void
 init_state(int state, int eval, bitmap *bitmap)
 {
@@ -71,21 +88,164 @@ init_state(int state, int eval, bitmap *bitmap)
 	jpeg_eval = eval;
 	eval_cnt = 0;
 
+	dctmin = 127;
+	dctmax = -127;
+
 	off = 0;
 	if (state == JPEG_READING) {
 		memset(&tbitmap, 0, sizeof(tbitmap));
 		tbitmap.bytes = 256;
 		tbitmap.bits = tbitmap.bytes * 8;
 		tbitmap.bitmap = checkedmalloc(tbitmap.bytes);
-		tbitmap.detect = checkedmalloc(tbitmap.bits);
+		tbitmap.locked = checkedmalloc(tbitmap.bytes);
+		memset(tbitmap.locked, 0, tbitmap.bytes);
+		tbitmap.data = checkedmalloc(tbitmap.bits);
 	} else if (bitmap) {
 		memcpy(&tbitmap, bitmap, sizeof(tbitmap));
 	}
 }
 
+int
+preserve_single(bitmap *bitmap, int off, char coeff)
+{
+	int i;
+	char *data = bitmap->data;
+	char *pbits = bitmap->bitmap;
+	char *plock = bitmap->locked;
+	char *pmetalock = bitmap->metalock;
+
+	for (i = off - 1; i >= 0; i--) {
+		if (TEST_BIT(plock, i))
+			continue;
+		if (TEST_BIT(pmetalock, i))
+			continue;
+
+		/* Switch the coefficient to the value that we just replaced */
+		if (data[i] == coeff) {
+			char cbit;
+
+			data[i] = coeff ^ 0x01;
+
+			cbit = (unsigned char)coeff & 0x01;
+			WRITE_BIT(pbits, i, cbit ^ 0x01);
+
+			WRITE_BIT(pmetalock, i, 1);
+			
+			if (jpeg_eval) 
+				fprintf(stderr,
+					"off: %d, i: %d, coeff: %d, data: %d\n",
+					off, i, coeff, data[i]);
+
+			return (i);
+		}
+	}
+
+	return (-1);
+}
+
+
+int
+preserve_jpg(bitmap *bitmap, int off)
+{
+	char coeff;
+	int i, a, b;
+	char *data = bitmap->data;
+
+	if (off == -1) {
+		int res;
+
+		if (jpeg_eval)
+			fprintf(stderr, "DCT: %d<->%d\n", dctmin, dctmax);
+
+		bitmap->preserve = preserve_jpg;
+		memset(bitmap->metalock, 0, bitmap->bytes);
+
+		memset(dctadjust, 0, sizeof(dctadjust));
+		memset(dctfreq, 0, sizeof(dctfreq));
+		dctpending = 0;
+
+		/* Calculate coefficent frequencies */
+		for (i = 0; i < bitmap->bits; i++) {
+			dctfreq[data[i] + 127]++;
+		}
+
+		a = dctfreq[-1 + 127];
+		b = dctfreq[-2 + 127];
+
+		if (a < b) {
+			fprintf(stderr, "Can not calculate estimate\n");
+			res = -1;
+		} else
+			res = 2*bitmap->bits*b/(a + b);
+
+		/* Pending threshold based on frequencies */
+		for (i = 0; i < DCTENTRIES; i++) {
+			dctfreq[i] = dctfreq[i] /
+				((float)bitmap->bits / DCTFREQRANGE);
+			dctfreq[i] /= DCTFREQREDUCE;
+			if (dctfreq[i] < DCTFREQMIN)
+				dctfreq[i] = DCTFREQMIN;
+
+			if (jpeg_eval)
+				fprintf(stderr, "Foil: %d :< %d\n",
+					i - 127, dctfreq[i]);
+		}
+
+		bitmap->maxcorrect = res;
+		return (res);
+	} else if (off >= bitmap->bits) {
+		/* Reached end of image */
+		for (i = 0; i < DCTENTRIES; i++) {
+			while (dctadjust[i]) {
+				dctadjust[i]--;
+
+				coeff = i - 127;
+
+				if (preserve_single(bitmap, bitmap->bits - 1,
+						    coeff) != -1)
+					steg_foil++;
+				else
+					steg_foilfail++;
+			}
+		}
+
+		return(0);
+	}
+
+	/* We need to find this coefficient, and change it to data[off] */
+	coeff = data[off] ^ 0x01;
+
+	if (dctadjust[data[off] + 127]) {
+		/* But we are still missing compensation for the opposite */
+		dctadjust[data[off] + 127]--;
+		dctpending--;
+		return (0);
+	}
+
+	if (dctadjust[coeff + 127] < dctfreq[coeff + 127]) {
+		dctadjust[coeff + 127]++;
+		dctpending++;
+		return (0);
+	}
+
+	i = preserve_single(bitmap, off, coeff);
+
+	if (i != -1) {
+		steg_foil++;
+		return (i);
+	}
+
+	/* We have one too many of this */
+	dctadjust[coeff + 127]++;
+	dctpending++;
+
+	return (-1);
+}
+
 bitmap *
 finish_state(void)
 {
+	int i;
 	bitmap *pbitmap;
 
 	if (jpeg_eval)
@@ -94,13 +254,25 @@ finish_state(void)
 	if (jpeg_state != JPEG_READING)
 		return NULL;
 
-	pbitmap = checkedmalloc(sizeof(bitmap));
-
 	tbitmap.bits = off;
 	tbitmap.bytes = (off + 7) / 8;
 
-	tbitmap.locked = checkedmalloc(tbitmap.bytes);
-	memset(tbitmap.locked, 0, tbitmap.bytes);
+	tbitmap.detect = checkedmalloc(tbitmap.bits);
+	tbitmap.metalock = checkedmalloc(tbitmap.bytes);
+
+	for (i = 0; i < off; i++) {
+		char temp = abs(tbitmap.data[i]);
+		if (temp >= JPG_THRES_MAX)
+			tbitmap.detect[i] = -1;
+		else if (temp >= JPG_THRES_LOW)
+			tbitmap.detect[i] = 0;
+		else if (temp >= JPG_THRES_MIN)
+			tbitmap.detect[i] = 1;
+		else
+			tbitmap.detect[i] = 2;
+	}
+
+	pbitmap = checkedmalloc(sizeof(bitmap));
 
 	memcpy(pbitmap, &tbitmap, sizeof(tbitmap));
 
@@ -110,20 +282,18 @@ finish_state(void)
 short
 steg_use_bit (unsigned short temp)
 {
-	if ((temp & 0x1) == temp)
+  	if ((temp & 0x1) == temp)
 		goto steg_end;
 
 	switch (jpeg_state) {
 	case JPEG_READING:
 		WRITE_BIT(tbitmap.bitmap, off, temp & 0x1);
-		if (abs((short) temp) >= JPG_THRES_MAX)
-			tbitmap.detect[off] = -1;
-		else if (abs((short) temp) >= JPG_THRES_LOW)
-			tbitmap.detect[off] = 0;
-		else if (abs((short) temp) >= JPG_THRES_MIN)
-			tbitmap.detect[off] = 1;
-		else
-			tbitmap.detect[off] = 2;
+		tbitmap.data[off] = temp;
+
+		if ((short)temp < dctmin)
+			dctmin = (short)temp;
+		if ((short)temp > dctmax)
+			dctmax = (short)temp;
 
 		off++;
 
@@ -137,11 +307,17 @@ steg_use_bit (unsigned short temp)
 				exit(1);
 			}
 			tbitmap.bitmap = buf;
-			if (!(buf = realloc(tbitmap.detect, tbitmap.bits))) {
+			if (!(buf = realloc(tbitmap.locked, tbitmap.bytes))) {
 				fprintf(stderr, "steg_use_bit: realloc()\n");
 				exit(1);
 			}
-			tbitmap.detect = buf;
+			tbitmap.locked = buf;
+			memset(tbitmap.locked + tbitmap.bytes - 256, 0, 256);
+			if (!(buf = realloc(tbitmap.data, tbitmap.bits))) {
+				fprintf(stderr, "steg_use_bit: realloc()\n");
+				exit(1);
+			}
+			tbitmap.data = buf;
 		}
 		break;
 	default:
@@ -154,8 +330,9 @@ steg_use_bit (unsigned short temp)
  steg_end:
 	if (jpeg_eval) {
 		if (eval_cnt % DCTSIZE2 == 0)
-			fprintf(stderr, "\n%.7d: ", eval_cnt);
-		fprintf(stderr, "% .3d,", (short) temp);
+			fprintf(stderr, "\n[%d]%.7d: ", jpeg_state, eval_cnt);
+		if ((temp & 0x1) != temp)
+			fprintf(stderr, "% .3d,", (short) temp);
 		eval_cnt++;
 	}
 
