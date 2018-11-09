@@ -1,5 +1,6 @@
 /*
  * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright 2016      Joao Eriberto Mota Filho <eriberto@eriberto.pro.br>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +39,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "config.h"
 #include "outguess.h"
