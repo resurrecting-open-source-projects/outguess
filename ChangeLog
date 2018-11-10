@@ -1,0 +1,37 @@
+OutGuess 0.13b
+--------------
+1999-08-06 - Niels Provos <provos@citi.umich.edu>
+ - Add additional statistics for analysis purposes.
+ - Fix a bug that changed bits in searching mode.
+
+OutGuess 0.13
+-------------
+1999-07-18 - Niels Provos <provos@citi.umich.edu>
+
+- With ECC introduce errors where possible to avoid changing bits
+  with high detectability.
+- Add statistics for changed bits distribution via -t flag
+- Give a weight to each bit to indicate its detecability.
+
+OutGuess 0.12
+-------------
+1999-07-10 - Niels Provos <provos@citi.umich.edu>
+
+- Make the Golay encoding work with tolerating 3 bit errors.
+
+OutGuess 0.11
+-------------
+1999-07-07 - Niels Provos <provos@citi.umich.edu>
+
+- Via configure allow compilation on other systems than OpenBSD
+- Pass a parameter to the destination handler, for JPEG it is the
+  compression quality, but e.g. for wav or mp3 it could be frequency
+  and sample rate.
+- Output the total number of bits changed for easier batch processing.
+- Reduce the number of bit errors allowed in the Golay code from 3 to
+  2 per 23-bit block.
+
+OutGuess 0.1
+------------
+
+1999-07-05 - Niels Provos <provos@citi.umich.edu>

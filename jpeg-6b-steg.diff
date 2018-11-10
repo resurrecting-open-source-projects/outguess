@@ -1,0 +1,28 @@
+You need the source distribution for the JPEG 6b libraries, to
+be found at ftp://ftp.uu.net/graphics/jpeg/jpegsrc.v6b.tar.gz,
+and the apply this patch and compile libjpeg.a.
+
+diff -ur jpeg-6b/jcdctmgr.c jpeg-6b-steg/jcdctmgr.c
+--- jpeg-6b/jcdctmgr.c	Sat Jan 13 14:15:12 1996
++++ jpeg-6b-steg/jcdctmgr.c	Mon Jul  5 12:41:27 1999
+@@ -257,7 +257,7 @@
+ 	  temp += qval>>1;	/* for rounding */
+ 	  DIVIDE_BY(temp, qval);
+ 	}
+-	output_ptr[i] = (JCOEF) temp;
++	output_ptr[i] = (JCOEF) i ? steg_use_bit(temp) : temp;
+       }
+     }
+   }
+diff -ur jpeg-6b/jdhuff.c jpeg-6b-steg/jdhuff.c
+--- jpeg-6b/jdhuff.c	Mon Oct 20 20:51:10 1997
++++ jpeg-6b-steg/jdhuff.c	Tue Jul  6 05:31:42 1999
+@@ -590,6 +590,8 @@
+ 	    k += 15;
+ 	  }
+ 	}
++	for (k = 1; k < DCTSIZE2; k++)
++		steg_use_bit((JCOEF) (*block)[k]);
+ 
+       } else {
+ 

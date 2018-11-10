@@ -1,0 +1,22 @@
+
+#if STDC_HEADERS || HAVE_STRING_H
+# include <string.h>
+#else
+# ifndef HAVE_STRCHR
+#  define strchr index
+#  define strrchr rindex
+# endif
+char *strchr (), *strrchr ();
+# ifndef HAVE_MEMCPY
+#  define memcpy(d, s, n) bcopy ((s), (d), (n))
+#  define memmove(d, s, n) bcopy ((s), (d), (n))
+# endif
+#endif
+
+#ifndef HAVE_STRCASECMP
+#define strcasecmp strcmp
+#endif
+
+#ifndef __P
+#define __P(x)	x
+#endif
