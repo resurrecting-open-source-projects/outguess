@@ -1,0 +1,45 @@
+.\"
+.\"
+.\" The following requests are required for all man pages.
+.Dd September 26, 2002
+.Dt seek_script 1
+.Os
+.Sh NAME
+.Nm seek_script
+.Nd A very simple script using OutGuess to find an image that yields the best embedding.
+.Pp
+.Pp
+.Sh SYNOPSIS
+.Nm seek_script [param for outguess]
+.Pp
+.Pp
+.Sh DESCRIPTION
+The
+.Nm
+ script scans the current directory to find the best JPEG file in which hide
+ the message that resides in /tmp/fortune. At the end the script will print 
+ the best and the worst JPEG file in which to put the message.
+.Pp
+.Pp
+.Sh ERRORS
+.Nm
+works only for
+.Tn JPEG
+images.
+.Pp
+.Pp
+.Sh SEE ALSO
+.Xr /usr/share/doc/outguess/README
+.Xr outguess 1
+.Pp
+.Pp
+.Sh ACKNOWLEDGEMENTS
+This product includes software developed by Ian F. Darwin and others.
+.Pp
+.Sh AUTHORS
+The
+.Nm
+utility has been developed by Niels Provos.
+.Sh AUTHOR
+This manual page was written by Samuele Giovanni Tonon <samu@debian.org>,
+for the Debian GNU/Linux system (but may be used by others).
