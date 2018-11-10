@@ -1,4 +1,5 @@
 # OutGuess 0.1 Makefile (c) 1999 Niels Provos
+# 2018 Frédéric Bonnard <frediz@debian.org>
 
 srcdir		= @srcdir@
 VPATH		= @srcdir@
@@ -45,7 +46,7 @@ extract: outguess
 	ln -sf outguess $@
 
 $(JPEGDEP):
-	cd $(JPEGDIR); $(MAKE) libjpeg.a
+	cd $(JPEGDIR); $(MAKE) -f makefile.ansi CFLAGS=-DHAVE_STDC_HEADERS libjpeg.a
 
 install: all
 	$(INSTALL_PROG) -m 755 outguess $(install_prefix)$(bindir)
