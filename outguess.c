@@ -4,6 +4,7 @@
  * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
  * Copyright 2002      Samuele Giovanni Tonon <samu@debian.org>
  * Copyright 2016      Joao Eriberto Mota Filho <eriberto@debian.org>
+ * Copyright 2017      Chris Rorvick <chris@rorvick.com>
  * Features
  * - preserves frequency count based statistics
  * - multiple data embedding
@@ -695,7 +696,7 @@ do_embed(bitmap *bitmap, u_char *filename, u_char *key, u_int klen,
 	}
 	if (bitmap->maxcorrect && correctlen > bitmap->maxcorrect) {
 		fprintf(stderr, "steg_embed: "
-			"message larger than correctable size %d > %d\n",
+			"message larger than correctable size %zu > %zu\n",
 			correctlen, bitmap->maxcorrect);
 		exit(1);
 	}
@@ -977,7 +978,7 @@ main(int argc, char **argv)
 			dsth->preserve(&bitmap, -1);
 			if (bitmap.maxcorrect)
 				fprintf(stderr,
-					"Correctable message size: %d bits, %0.2f%%\n",
+					"Correctable message size: %zu bits, %0.2f%%\n",
 					bitmap.maxcorrect,
 					(float)100*bitmap.maxcorrect/bitmap.bits);
 		}
