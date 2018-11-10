@@ -219,7 +219,7 @@ read_pnm(FILE *fin)
 	}
 
 	if (ferror(fin)) {
-		perror("Error occured while reading input file");
+		perror("Error occurred while reading input file");
 		exit(1);
 	}
 	if (feof(fin)) {

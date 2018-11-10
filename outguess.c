@@ -939,7 +939,7 @@ main(int argc, char **argv)
 
 	/* Initialize Golay-Tables for 12->23 bit error correction */
 	if (doerror || doerror2) {
-		fprintf(stderr, "Initalize encoding/decoding tables\n");
+		fprintf(stderr, "Initialize encoding/decoding tables\n");
 		init_golay();
 	}
 
