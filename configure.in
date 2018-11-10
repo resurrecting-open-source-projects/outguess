@@ -1,5 +1,6 @@
 dnl configure.in, based on configure.scan from 'autoscan'
 dnl dugsong@monkey.org and provos@citi.umich.edu
+dnl 2016 Joao Eriberto Mota Filho <eriberto@debian.org>
 
 AC_INIT(outguess.c)
 
@@ -38,12 +39,12 @@ AC_FUNC_MMAP
 AC_CHECK_FUNCS(strrchr memcpy)
 
 AC_CHECK_FUNC(strcasecmp,
-	AC_DEFINE(HAVE_STRCASECMP),
+	AC_DEFINE([HAVE_STRCASECMP], [], [none]),
 	AC_MSG_RESULT(File extensions will be case sensitive!)
 	     )
 
-AC_CHECK_FUNC(snprintf, 
-	AC_DEFINE(HAVE_SNPRINTF),
+AC_CHECK_FUNC(snprintf,
+	AC_DEFINE([HAVE_SNPRINTF], [], [none]),
 	AC_MSG_RESULT(will use sprintf instead, you have a bad system)
 	     )
 
