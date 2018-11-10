@@ -62,13 +62,13 @@ A bias is introduced that favors the modification of bits that were
 extracted from a high value, and tries to avoid the modification of
 bits that were extracted from a low value.
 .PP
-Additionally, 
+Additionally,
 .I Outguess
 allows for the hiding of two distinct messages in the data, thus
-providing plausible deniablity.  It keeps track of the bits that have
+providing plausible deniability.  It keeps track of the bits that have
 been modified previously and locks them.  A (23,12,7) Golay code is
 used for error correction to tolerate collisions on locked bits.
-Artifical errors are introduced to avoid modifying bits that have a
+Artificial errors are introduced to avoid modifying bits that have a
 high bias.
 .SH OPTIONS
 .LP
