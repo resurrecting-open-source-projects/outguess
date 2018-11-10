@@ -64,5 +64,6 @@ distclean-local:
 	$(JPEGDIR)/configure \
 	$(JPEGDIR)/depcomp \
 	$(JPEGDIR)/install-sh \
+	$(JPEGDIR)/libjpeg.a \
 	$(JPEGDIR)/Makefile.in \
 	$(JPEGDIR)/missing
