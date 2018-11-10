@@ -1,7 +1,8 @@
 /*
  * Outguess - a Universal Steganograpy Tool for
  *
- * Copyright (c) 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright 2002      Samuele Giovanni Tonon <samu@debian.org>
  * Features
  * - preserves frequency count based statistics
  * - multiple data embedding
@@ -818,7 +819,7 @@ main(int argc, char **argv)
                 cp = strrchr(argv[0], '/') + 1;
         else
                 cp = argv[0];
-	if (!strcmp("extract", cp)) {
+	if (!strcmp("outguess-extract", cp)) {
 		extractonly = 1;
 		doretrieve = 1;
 		argv++;
