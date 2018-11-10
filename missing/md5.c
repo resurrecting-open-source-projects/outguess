@@ -28,6 +28,7 @@
 #endif
 
 #include "md5.h"
+#include <string.h>
 
 /* Little-endian byte-swapping routines.  Note that these do not
    depend on the size of datatypes such as uint32, nor do they require

@@ -1,5 +1,6 @@
 /*
  * Copyright 1999 Niels Provos <provos@citi.umich.edu>
+ * Copyright 2016 Joao Eriberto Mota Filho <eriberto@debian.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +39,7 @@
  * intact).
  */
 
+#include <string.h>
 #include <sys/types.h>
 
 #include "config.h"

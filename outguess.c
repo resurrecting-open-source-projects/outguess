@@ -3,6 +3,7 @@
  *
  * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
  * Copyright 2002      Samuele Giovanni Tonon <samu@debian.org>
+ * Copyright 2016      Joao Eriberto Mota Filho <eriberto@debian.org>
  * Features
  * - preserves frequency count based statistics
  * - multiple data embedding
@@ -51,6 +52,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <math.h>
+#include <string.h>
 
 #include "config.h"
 

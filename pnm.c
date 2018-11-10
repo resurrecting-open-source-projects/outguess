@@ -1,5 +1,6 @@
 /*
  * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright 2016      Joao Eriberto Mota Filho <eriberto@debian.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,13 +32,14 @@
 /* This source code is derived in parts from
  *   StirMark -- Experimental watermark resilience testkit
  *   Markus Kuhn <mkuhn@acm.org>, University of Cambridge
- *   (c) 1997 Markus Kuhn
+ *   Copyright (c) 1997 Markus Kuhn <mkuhn@acm.org>
  */
 
 #include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "config.h"
 #include "outguess.h"
