@@ -43,7 +43,7 @@
 #include "config.h"
 #include "outguess.h"
 #include "pnm.h"
-#include "jpeglib.h"
+#include "jpeg-9c/jpeglib.h"
 #include "jpg.h"
 
 void jpeg_dummy_dest (j_compress_ptr cinfo);
