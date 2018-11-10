@@ -1,5 +1,6 @@
 /*
  * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright 2016      Chris Rorvick <chris@rorvick.com>
  * Copyright 2016      Joao Eriberto Mota Filho <eriberto@debian.org>
  * All rights reserved.
  *
@@ -65,6 +66,8 @@ init_pnm(char *parameter)
 int
 preserve_pnm(bitmap *bitmap, int off)
 {
+    if (off == -1)
+	    bitmap->preserve = preserve_pnm;
 
 	return (-1);
 }
