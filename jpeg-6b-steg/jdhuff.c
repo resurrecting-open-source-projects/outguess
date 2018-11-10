@@ -590,9 +590,6 @@ decode_mcu (j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
 	    k += 15;
 	  }
 	}
-	for (k = 1; k < DCTSIZE2; k++)
-		steg_use_bit((JCOEF) (*block)[k]);
-
       } else {
 
 	/* Section F.2.2.2: decode the AC coefficients */

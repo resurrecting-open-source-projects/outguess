@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright (C) 1999-2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,52 +28,50 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * Handling functions for the PNM image format.
- */
+#include <sys/types.h>
 
-#ifndef _PNM_H
-#define _PNM_H
+#include "config.h"
 
-#define PNM_THRES_MAX	0xf0
-#define PNM_THRES_MIN	0x10
+#include "outguess.h"
+#include "arc.h"
+#include "iterator.h"
 
-/*
- * This is our raw data object, also used to create JPG or other
- * encoded output.
- */
+/* Initalize the iterator */
 
-typedef struct _image {
-	int x, y, depth, max;
-	u_char *img;
-	bitmap *bitmap;
-	int flags;
-} image;
+void
+iterator_init(iterator *iter, bitmap *bitmap, u_char *key, u_int klen)
+{
+	iter->skipmod = INIT_SKIPMOD;
 
-typedef struct _handler {
-	char *extension;				/* Extension name */
-	void (*init)(char *);
-	image *(*read)(FILE *);
-	void (*write)(FILE *, image *);
-	void (*get_bitmap)(bitmap *, image *, int);
-	void (*put_bitmap)(image *, bitmap *, int);
-	int (*preserve)(bitmap *, int);
-} handler;
-	
-extern handler pnm_handler;
+	arc4_initkey(&iter->as, "Seeding", key, klen);
 
-void skip_white(FILE *f);
+	iter->off = arc4_getword(&iter->as) % iter->skipmod;
+}
 
-void init_pnm(char *);
+/* The next bit in the bitmap we should embed data into */
 
-int preserve_pnm(bitmap *, int);
+int
+iterator_next(iterator *iter, bitmap *bitmap)
+{
+	iter->off += (arc4_getword(&iter->as) % iter->skipmod) + 1;
 
-void bitmap_to_pnm(image *img, bitmap *bitmap, int flags);
-void bitmap_from_pnm(bitmap *bitmap, image *image, int flags);
+	return iter->off;
+}
 
-image *read_pnm(FILE *fin);
-void write_pnm(FILE *fout, image *image);
+void
+iterator_seed(iterator *iter, bitmap *bitmap, u_int16_t seed)
+{
+	u_int8_t reseed[2];
 
-void free_pnm(image *image);
+	reseed[0] = seed;
+	reseed[1] = seed >> 8;
 
-#endif /* _PNM_H */
+	arc4_addrandom(&iter->as, reseed, 2);
+}
+
+void
+iterator_adapt(iterator *iter, bitmap *bitmap, int datalen)
+{
+	iter->skipmod = SKIPADJ(bitmap->bits, bitmap->bits - iter->off) *
+		(bitmap->bits - iter->off)/(8 * datalen);
+}

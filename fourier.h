@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright (c) 1999, 2000 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,52 +28,17 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * Handling functions for the PNM image format.
- */
+#ifndef _FOURIER_H
+#define _FOURIER_H
 
-#ifndef _PNM_H
-#define _PNM_H
+int split_colors(u_char **pred, u_char **pgreen, u_char **pblue, 
+		  u_char *img, int xdim, int ydim, int depth);
 
-#define PNM_THRES_MAX	0xf0
-#define PNM_THRES_MIN	0x10
+void fft_visible(int xdim, int ydim, fftw_complex *c, u_char *img,
+		 double maxre, double maxim, double maxmod);
+fftw_complex *fft_transform(int xdim, int ydim, unsigned char *data,
+	       double *mre, double *mim, double *mmod);
+void fft_filter(int xdim, int ydim, fftw_complex *data);
+u_char *fft_transform_back(int xdim, int ydim, fftw_complex *data);
+#endif
 
-/*
- * This is our raw data object, also used to create JPG or other
- * encoded output.
- */
-
-typedef struct _image {
-	int x, y, depth, max;
-	u_char *img;
-	bitmap *bitmap;
-	int flags;
-} image;
-
-typedef struct _handler {
-	char *extension;				/* Extension name */
-	void (*init)(char *);
-	image *(*read)(FILE *);
-	void (*write)(FILE *, image *);
-	void (*get_bitmap)(bitmap *, image *, int);
-	void (*put_bitmap)(image *, bitmap *, int);
-	int (*preserve)(bitmap *, int);
-} handler;
-	
-extern handler pnm_handler;
-
-void skip_white(FILE *f);
-
-void init_pnm(char *);
-
-int preserve_pnm(bitmap *, int);
-
-void bitmap_to_pnm(image *img, bitmap *bitmap, int flags);
-void bitmap_from_pnm(bitmap *bitmap, image *image, int flags);
-
-image *read_pnm(FILE *fin);
-void write_pnm(FILE *fout, image *image);
-
-void free_pnm(image *image);
-
-#endif /* _PNM_H */

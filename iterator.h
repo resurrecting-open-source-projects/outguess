@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright (C) 1999-2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,52 +28,33 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _ITERATOR_H
+#define _ITERATOR_H
+
+#define INIT_SKIPMOD	32
+#define DEFAULT_ITER	256
+
+/* Slowly fade skip out at the end of the picture */
+#define SKIPADJ(x,y)	((y) > (x)/32 ? 2 : 2 - ((x/32) - (y))/(float)(x/32))
+
 /*
- * Handling functions for the PNM image format.
+ * The generic iterator
  */
 
-#ifndef _PNM_H
-#define _PNM_H
+typedef struct _iterator {
+	struct arc4_stream as;
+	u_int32_t skipmod;
+	int off;		/* Current bit position */
+} iterator;
 
-#define PNM_THRES_MAX	0xf0
-#define PNM_THRES_MIN	0x10
+struct _bitmap;
 
-/*
- * This is our raw data object, also used to create JPG or other
- * encoded output.
- */
+void iterator_init(iterator *, struct _bitmap *,  u_char *key, u_int klen);
+int iterator_next(iterator *, struct _bitmap *);
 
-typedef struct _image {
-	int x, y, depth, max;
-	u_char *img;
-	bitmap *bitmap;
-	int flags;
-} image;
+#define ITERATOR_CURRENT(x)	(x)->off
 
-typedef struct _handler {
-	char *extension;				/* Extension name */
-	void (*init)(char *);
-	image *(*read)(FILE *);
-	void (*write)(FILE *, image *);
-	void (*get_bitmap)(bitmap *, image *, int);
-	void (*put_bitmap)(image *, bitmap *, int);
-	int (*preserve)(bitmap *, int);
-} handler;
-	
-extern handler pnm_handler;
+void iterator_seed(iterator *, struct _bitmap *, u_int16_t);
+void iterator_adapt(iterator *, struct _bitmap *, int);
 
-void skip_white(FILE *f);
-
-void init_pnm(char *);
-
-int preserve_pnm(bitmap *, int);
-
-void bitmap_to_pnm(image *img, bitmap *bitmap, int flags);
-void bitmap_from_pnm(bitmap *bitmap, image *image, int flags);
-
-image *read_pnm(FILE *fin);
-void write_pnm(FILE *fout, image *image);
-
-void free_pnm(image *image);
-
-#endif /* _PNM_H */
+#endif

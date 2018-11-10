@@ -1,5 +1,5 @@
 /*
- * Copyright 1999 Niels Provos <provos@citi.umich.edu>
+ * Copyright (C) 1999-2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,21 +36,15 @@
 #define BITSHIFT	0	/* which bit in the byte the data is in */
 
 #define MAX_DEPTH 3             /* maximum number of bytes per pixel */
-
-#define INIT_SKIPMOD	32
-#define DEFAULT_ITER	256
+#define MAX_SEEK	1024	/* maximum number of pixels for foil stats */
 
 #define STEG_EMBED	0x01
 #define STEG_MARK	0x02
-#define STEG_FORBID	0x04
 #define STEG_ERROR	0x08
 
 #define STEG_RETRIEVE	0x10
 
 #define STEG_STATS	0x20
-
-/* Slowly fade skip out at the end of the picture */
-#define SKIPADJ(x,y)	((y) > (x)/32 ? 2 : 2 - ((x/32) - (y))/(float)(x/32))
 
 extern int steg_stat;
 
@@ -64,9 +58,15 @@ extern int steg_stat;
 typedef struct _bitmap {
 	u_char *bitmap;		/* the bitmap */
 	u_char *locked;		/* bits that may not be modified */
+	u_char *metalock;	/* bits that have been used for foil */
 	char *detect;		/* relative detectability of changes */
+	char *data;		/* data associated with the bit */
 	int bytes;		/* allocated bytes */
 	int bits;		/* number of bits in here */
+
+				/* function to call for preserve stats */
+	int (*preserve)(struct _bitmap *, int);
+	size_t maxcorrect;
 } bitmap;
 
 #define STEG_ERR_HEADER		1
@@ -79,15 +79,11 @@ typedef struct _stegres {
 	int bias;		/* Accumulated bias of changed bits */
 } stegres;
 
-/*
- * The generic iterator
- */
-
-typedef struct _iterator {
-	struct arc4_stream as;
-	u_int32_t skipmod;
-	int off;		/* Current bit position */
-} iterator;
+typedef struct _config {
+	int flags;
+	int siter;
+	int siterstart;
+} config;
 
 #define TEST_BIT(x,y)		((x)[(y) / 8] & (1 << ((y) & 7)))
 #define WRITE_BIT(x,y,what)	((x)[(y) / 8] = ((x)[(y) / 8] & \
@@ -100,14 +96,17 @@ void *checkedmalloc(size_t n);
 u_char *encode_data(u_char *, int *, struct arc4_stream *, int);
 u_char *decode_data(u_char *, int *, struct arc4_stream *, int);
 
-int split_colors(u_char **pred, u_char **pgreen, u_char **pblue, 
-		  u_char *img, int xdim, int ydim, int depth);
+struct _iterator;
 
-stegres steg_embed(bitmap *bitmap, iterator *iter,
+stegres steg_embed(bitmap *bitmap, struct _iterator *iter,
 		   struct arc4_stream *as, u_char *data, u_int datalen,
 		   u_int16_t seed, int embed);
-u_int32_t steg_retrbyte(bitmap *bitmap, int bits, iterator *iter);
+u_int32_t steg_retrbyte(bitmap *bitmap, int bits, struct _iterator *iter);
 
-char *steg_retrieve(int *len, bitmap *bitmap, iterator *iter,
+char *steg_retrieve(int *len, bitmap *bitmap, struct _iterator *iter,
 		    struct arc4_stream *as, int);
+
+void mmap_file(char *name, u_char **data, int *size);
+void munmap_file(u_char *data, int len);
+
 #endif /* _OUTGUESS_H */

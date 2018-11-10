@@ -1,8 +1,9 @@
 /*
  * Outguess - a Universal Steganograpy Tool for
- * Steganographic Experiments and Fourier Transformation
-.* (c) 1999 Niels Provos <provos@citi.umich.edu>
+ *
+ * Copyright (c) 1999-2001 Niels Provos <provos@citi.umich.edu>
  * Features
+ * - preserves frequency count based statistics
  * - multiple data embedding
  * - PRNG driven selection of bits
  * - error correcting encoding
@@ -10,7 +11,7 @@
  */
 
 /*
- * Copyright 1999 Niels Provos <provos@citi.umich.edu>
+ * Copyright (c) 1999-2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +43,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -56,19 +58,7 @@
 #include "golay.h"
 #include "pnm.h"
 #include "jpg.h"
-
-#ifdef FOURIER
-#include <math.h>
-#include <rfftw.h>
-
-void fft_visible(int xdim, int ydim, fftw_complex *c, u_char *img,
-		 double maxre, double maxim, double maxmod);
-fftw_complex *fft_transform(int xdim, int ydim, unsigned char *data,
-	       double *mre, double *mim, double *mmod);
-void fft_filter(int xdim, int ydim, fftw_complex *data);
-u_char *fft_transform_back(int xdim, int ydim, fftw_complex *data);
-
-#endif /* FOURIER */
+#include "iterator.h"
 
 #ifndef MAP_FAILED
 /* Some Linux systems are missing this */
@@ -80,9 +70,14 @@ static int steg_err_cnt;
 static int steg_errors;
 static int steg_encoded;
 
+static int steg_offset[MAX_SEEK];
+int steg_foil;
+int steg_foilfail;
+
 static int steg_count;
 static int steg_mis;
 static int steg_mod;
+static int steg_data;
 
 /* Exported variables */
 
@@ -122,256 +117,6 @@ checkedmalloc(size_t n)
 	}
   
 	return p;
-}
-
-#ifdef FOURIER
-
-/* if depth > 1 */
-int
-split_colors(u_char **pred, u_char **pgreen, u_char **pblue, 
-	     u_char *img,
-	     int xdim, int ydim, int depth)
-{
-	int i, j;
-	u_char *red, *green, *blue;
-
-	/* Split to red - blue */
-	red = checkedmalloc(ydim*xdim);
-	green = checkedmalloc(ydim*xdim);
-	blue = checkedmalloc(ydim*xdim);
-
-	for (i = 0; i < ydim; i++) {
-		for (j = 0; j < xdim; j++) {
-			red[j + xdim*i] = img[0 + depth*(j + xdim*i)];
-			green[j + xdim*i] = img[1 + depth*(j + xdim*i)];
-			blue[j + xdim*i] = img[2 + depth*(j + xdim*i)];
-		}
-	}
-
-	*pred = red;
-	*pgreen = green;
-	*pblue = blue;
-
-	return 1;
-}
-
-void
-fft_image(int xdim, int ydim, int depth, u_char *img)
-{
-	int i,j;
-	u_char *red, *green, *blue;
-	fftw_complex *c, *d, *e;
-	double maxre, maxim, maxmod;
-
-	split_colors(&red, &green, &blue, img, xdim, ydim, depth);
-  
-	maxre = maxim = maxmod = 0;
-	c = fft_transform(xdim, ydim, red, &maxre, &maxim, &maxmod);
-	d = fft_transform(xdim, ydim, green, &maxre, &maxim, &maxmod);
-	e = fft_transform(xdim, ydim, blue, &maxre, &maxim, &maxmod);
-	fft_visible(xdim, ydim, c, red, maxre, maxim, maxmod);
-	free(c);
-	fft_visible(xdim, ydim, d, green, maxre, maxim, maxmod);
-	free(d);
-	fft_visible(xdim, ydim, e, blue, maxre, maxim, maxmod);
-	free(e);
-
-	for (i = 0; i < ydim; i++) {
-		for (j = 0; j < xdim; j++) {
-			img[0 + depth*(j + xdim*i)] = red[j + xdim*i];
-			img[1 + depth*(j + xdim*i)] = green[j + xdim*i];
-			img[2 + depth*(j + xdim*i)] = blue[j + xdim*i];
-		}
-	}
-
-	free(red); free(green); free(blue);
-}
-
-void
-fft_visible(int xdim, int ydim, fftw_complex *c, u_char *img,
-	    double maxre, double maxim, double maxmod)
-{
-	int i, j, ind;
-	double contrast, scale, factor, total, val;
-
-	contrast = exp((-100.5) * log(xdim*ydim) / 256);
-	factor = - 255.0;
-	total = 0;
-	scale = factor / log(maxmod * contrast * contrast + 1.0);
-
-	printf("Visible: max (%f/%f/%f), contrast: %f, scale: %f\n",
-	       maxre, maxim, maxmod, contrast, scale);
-
-	for (i = 0; i < xdim ; i++)
-		for (j = 0; j < ydim; j++) {
-			ind = j*xdim + i;
-			val = total - scale*log(contrast*contrast*
-						(c[ind].re*c[ind].re +
-						 c[ind].im*c[ind].im) + 1);
-			img[ind] = val;
-		}
-}
-
-fftw_complex *
-fft_transform(int xdim, int ydim, unsigned char *data,
-	       double *mre, double *mim, double *mmod)
-{
-	rfftwnd_plan p;
-	int i,j, ind, di, dj;
-	double maxre, maxim, maxmod, val;
-	fftw_complex *a;
-  
-	fprintf(stderr, "Starting complex 2d FFT\n");
-
-	a = checkedmalloc(xdim * ydim * sizeof(fftw_complex));
-
-	p = fftw2d_create_plan(ydim, xdim, FFTW_FORWARD,
-			       FFTW_ESTIMATE | FFTW_IN_PLACE);
-
-	di = 1;
-	for (j = 0; j < ydim; j++) {
-		dj = di;
-		for (i = 0; i < xdim ; i++) {
-			ind = i + j * xdim;
-			a[ind].re = data[ind] * dj;
-			a[ind].im = 0.0;
-			dj = -dj;
-		}
-		di = -di;
-	}
-
-	fftwnd_one(p, a, NULL);
-
-	maxim = *mim;
-	maxre = *mre;
-	maxmod = *mmod;
-	for (i = 0; i < xdim ; i++)
-		for (j = 0; j < ydim; j++) {
-			ind = j*xdim + i;
-
-			/* Update Stats */
-			if (fabs(a[ind].re) > maxre) maxre = fabs(a[ind].re);
-			if (fabs(a[ind].im) > maxim) maxim = fabs(a[ind].im);
-			val = a[ind].re * a[ind].re + a[ind].im * a[ind].im;
-			if (val > maxmod) maxmod = val;
-		}
-	*mim = maxim;
-	*mre = maxre;
-	*mmod = maxmod;
-
-	fftwnd_destroy_plan(p);
-
-	return a;
-}
-
-void
-fft_filter(int xdim, int ydim, fftw_complex *data)
-{
-	int i, j, ind;
-	double val;
-
-	fprintf(stderr, "Starting complex filtering\n");
-
-	for (j = 0; j < ydim; j++) {
-		for (i = 0; i < xdim ; i++) {
-			ind = i + j * xdim;
-			val = sqrt((xdim/2-i)*(xdim/2-i) +
-				   (ydim/2-j)*(ydim/2-j));
-			if (val > 15) {
-				data[ind].re = 2*data[ind].re;
-				data[ind].im = 2*data[ind].im;
-			} else {
-				data[ind].re = 0.2*data[ind].re;
-				data[ind].im = 0.2*data[ind].im;
-			}
-		}
-	}
-}
-
-u_char *
-fft_transform_back(int xdim, int ydim, fftw_complex *data)
-{
-	rfftwnd_plan p;
-	int i,j, ind;
-	fftw_real dj, val;
-	u_char *a;
-
-	fprintf(stderr, "Starting complex 2d FFT-back\n");
-
-	a = checkedmalloc(xdim * ydim * sizeof(u_char));
-
-	p = fftw2d_create_plan(ydim, xdim, FFTW_BACKWARD,
-			       FFTW_ESTIMATE | FFTW_IN_PLACE);
-
-	fftwnd_one(p, data, NULL);
-
-	dj = (xdim * ydim);
-	for (j = 0; j < ydim; j++) {
-		for (i = 0; i < xdim ; i++) {
-			ind = i + j * xdim;
-			val = sqrt(data[ind].re * data[ind].re +
-				   data[ind].im * data[ind].im)/dj;
-			a[ind] = val;
-		}
-	}
-
-	return a;
-}
-#endif /* FOURIER */
-
-/* Initalize the iterator */
-
-void
-iterator_init(iterator *iter, bitmap *bitmap, struct arc4_stream *as)
-{
-	int i;
-	char derive[16];
-
-	iter->skipmod = INIT_SKIPMOD;
-	iter->as = *as;
-
-	/* Put the PRNG in different state, using key dependant data
-	 * provided by the PRNG itself.
-	 */
-	for (i = 0; i < sizeof(derive); i++)
-		derive[i] = arc4_getbyte(&iter->as);
-	arc4_addrandom(&iter->as, derive, sizeof(derive));
-
-	iter->off = arc4_getword(&iter->as) % iter->skipmod;
-}
-
-/* The next bit in the bitmap we should embed data into */
-
-int
-iterator_next(iterator *iter, bitmap *bitmap)
-{
-	iter->off += (arc4_getword(&iter->as) % iter->skipmod) + 1;
-
-	return iter->off;
-}
-
-static __inline int
-iterator_current(iterator *iter)
-{
-	return iter->off;
-}
-
-void
-iterator_seed(iterator *iter, bitmap *bitmap, u_int16_t seed)
-{
-	u_int8_t reseed[2];
-
-	reseed[0] = seed;
-	reseed[1] = seed >> 8;
-
-	arc4_addrandom(&iter->as, reseed, 2);
-}
-
-void
-iterator_adapt(iterator *iter, bitmap *bitmap, int datalen)
-{
-	iter->skipmod = SKIPADJ(bitmap->bits, bitmap->bits - iter->off) *
-		(bitmap->bits - iter->off)/(8 * datalen);
 }
 
 /*
@@ -420,6 +165,7 @@ steg_adjust_errors(bitmap *bitmap, int flags)
 
 	for (i = 0; i < j; i++) {
 		if (flags & STEG_EMBED) {
+			WRITE_BIT(bitmap->locked, i, 0);
 			if (TEST_BIT(bitmap->bitmap, priority[i]))
 				WRITE_BIT(bitmap->bitmap, i, 0);
 			else
@@ -434,10 +180,17 @@ int
 steg_embedchunk(bitmap *bitmap, iterator *iter,
 		u_int32_t data, int bits, int embed)
 {
-	int i = iterator_current(iter);
+	int i = ITERATOR_CURRENT(iter);
+	u_int8_t bit;
 	u_int32_t val;
+	u_char *pbits, *plocked;
+	int nbits;
 
-	while (i < bitmap->bits && bits) {
+	pbits = bitmap->bitmap;
+	plocked = bitmap->locked;
+	nbits = bitmap->bits;
+
+	while (i < nbits && bits) {
 		if ((embed & STEG_ERROR) && !steg_encoded) {
 			if (steg_err_cnt > 0)
 				steg_adjust_errors(bitmap, embed);
@@ -448,7 +201,8 @@ steg_embedchunk(bitmap *bitmap, iterator *iter,
 		}
 		steg_encoded--;
 
-		val = (TEST_BIT(bitmap->bitmap, i) ? 1 : 0) ^ (data & 1);
+		bit = TEST_BIT(pbits, i) ? 1 : 0;
+		val = bit ^ (data & 1);
 		steg_count++;
 		if (val == 1) {
 			steg_mod += bitmap->detect[i];
@@ -456,8 +210,7 @@ steg_embedchunk(bitmap *bitmap, iterator *iter,
 		}
 
 		/* Check if we are allowed to change a bit here */
-		if ((embed & STEG_FORBID) && (val == 1) &&
-		    (TEST_BIT(bitmap->locked, i))) {
+		if ((val == 1) && TEST_BIT(plocked, i)) {
 			if (!(embed & STEG_ERROR) || (++steg_errors > 3))
 				return 0;
 			val = 2;
@@ -468,10 +221,8 @@ steg_embedchunk(bitmap *bitmap, iterator *iter,
 			steg_err_buf[steg_err_cnt++] = i;
 
 		if (val != 2 && (embed & STEG_EMBED)) {
-			if (embed & (STEG_FORBID|STEG_MARK))
-				WRITE_BIT(bitmap->locked, i, 1);
-      
-			WRITE_BIT(bitmap->bitmap, i, data & 1);
+			WRITE_BIT(plocked, i, 1);
+      			WRITE_BIT(pbits, i, data & 1);
 		}
 
 		data >>= 1;
@@ -497,7 +248,7 @@ steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 	memset(&result, 0, sizeof(result));
 
 	if (bitmap->bits / (datalen * 8) < 2) {
-		fprintf(stderr, "steb_embed: not enough bits in bitmap "
+		fprintf(stderr, "steg_embed: not enough bits in bitmap "
 			"for embedding: %d > %d/2\n",
 			datalen * 8, bitmap->bits);
 		exit (1);
@@ -542,7 +293,7 @@ steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 
 	iterator_seed(iter, bitmap, seed);
 
-	while (iterator_current(iter) < bitmap->bits && datalen > 0) {
+	while (ITERATOR_CURRENT(iter) < bitmap->bits && datalen > 0) {
 		iterator_adapt(iter, bitmap, datalen);
 		
 		tmp = *data++;
@@ -558,14 +309,17 @@ steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 	if ((embed & STEG_ERROR) && steg_err_cnt > 0)
 	  steg_adjust_errors(bitmap, embed);
 
-	if (embed & STEG_EMBED)
-		fprintf(stderr, "Bits embedded: %d, changed: %d(%2.1f%%), "
+	if (embed & STEG_EMBED) {
+		fprintf(stderr, "Bits embedded: %d, "
+			"changed: %d(%2.1f%%)[%2.1f%%], "
 			"bias: %d, tot: %d, skip: %d\n",
 			steg_count, steg_mis,
 			(float) 100 * steg_mis/steg_count,
+			(float) 100 * steg_mis/steg_data, /* normalized */
 			steg_mod,
-			iterator_current(iter),
-			iterator_current(iter) - steg_count);
+			ITERATOR_CURRENT(iter),
+			ITERATOR_CURRENT(iter) - steg_count);
+	}
 
 	result.changed = steg_mis;
 	result.bias = steg_mod;
@@ -576,7 +330,7 @@ steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 u_int32_t
 steg_retrbyte(bitmap *bitmap, int bits, iterator *iter)
 {
-	u_int32_t i = iterator_current(iter);
+	u_int32_t i = ITERATOR_CURRENT(iter);
 	int where;
 	u_int32_t tmp = 0;
 
@@ -686,6 +440,10 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 			else if (result.error)
 				continue;
 
+			/* 
+			 * Only count bias, if we do not modifiy many
+			 * extra bits for statistical foiling.
+			 */
 			tch = result.changed + result.bias;
 
 			if (steg_stat)
@@ -699,12 +457,14 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 			if (changed == -1 || tch < changed) {
 				changed = tch;
 				j = i;
-				fprintf(stderr, "New best: %5u: %5u(%2.1f%%), bias %5u(%1.2f), saved: % 5d\n",
+				fprintf(stderr, "%5u: %5u(%3.1f%%)[%3.1f%%], bias %5d(%1.2f), saved: % 5d, total: %5.2f%%\n",
 					j, result.changed, 
 					(float) 100 * steg_mis / steg_count,
+					(float) 100 * steg_mis / steg_data,
 					result.bias, 
 					(float)result.bias / steg_mis,
-					(half - result.changed) / 8);
+					(half - result.changed) / 8,
+					(float) 100 * steg_mis / bitmap->bits);
 			}
 		}
 
@@ -899,6 +659,62 @@ decode_data(u_char *encdata, int *len, struct arc4_stream *as, int flags)
 	return data;
 }
 
+int
+do_embed(bitmap *bitmap, u_char *filename, u_char *key, u_int klen,
+	 config *cfg, stegres *result)
+{
+	iterator iter;
+	struct arc4_stream as, tas;
+	u_char *encdata, *data;
+	u_int datalen, enclen;
+	size_t correctlen;
+	int j;
+
+	/* Initialize random data stream */
+	arc4_initkey(&as,  "Encryption", key, klen);
+	tas = as;
+		
+	iterator_init(&iter, bitmap, key, klen); 
+
+	/* Encode the data for us */
+	mmap_file(filename, &data, &datalen);
+	steg_data = datalen * 8;
+	enclen = datalen;
+	encdata = encode_data(data, &enclen, &tas, cfg->flags);
+	if (cfg->flags & STEG_ERROR) {
+		fprintf(stderr, "Encoded '%s' with ECC: %d bits, %d bytes\n",
+			filename, enclen * 8, enclen);
+		correctlen = enclen / 2 * 8;
+	} else {
+		fprintf(stderr, "Encoded '%s': %d bits, %d bytes\n",
+			filename, enclen * 8, enclen);
+		correctlen = enclen * 8;
+	}
+	if (bitmap->maxcorrect && correctlen > bitmap->maxcorrect) {
+		fprintf(stderr, "steg_embed: "
+			"message larger than correctable size %d > %d\n",
+			correctlen, bitmap->maxcorrect);
+		exit(1);
+	}
+
+	munmap_file(data, datalen);
+
+	j = steg_find(bitmap, &iter, &as, cfg->siter, cfg->siterstart,
+		      encdata, enclen, cfg->flags);
+	if (j < 0) {
+		fprintf(stderr, "Failed to find embedding.\n");
+		goto out;
+	}
+
+	*result = steg_embed(bitmap, &iter, &as, encdata, enclen, j,
+			    cfg->flags | STEG_EMBED);
+
+ out:
+	free(encdata);
+
+	return (j);
+}
+
 void
 mmap_file(char *name, u_char **data, int *size)
 {
@@ -950,7 +766,7 @@ munmap_file(u_char *data, int len)
 int
 main(int argc, char **argv)
 {
-	char version[] = "OutGuess 0.13b Universal Stego (c) 1999 Niels Provos";
+	char version[] = "OutGuess 0.2 Universal Stego (c) 1999-2001 Niels Provos";
 	char usage[] = "%s\n\n%s [options] [<input file> [<output file>]]\n"
 		"\t-[sS] <n>    iteration start, capital letter for 2nd dataset\n"
 		"\t-[iI] <n>    iteration limit\n"
@@ -962,42 +778,66 @@ main(int argc, char **argv)
 		"\t-x <n>       number of key derivations to be tried\n"
 		"\t-m           mark pixels that have been modified\n"
 		"\t-t           collect statistic information\n"
+		"\t-F[+-]       turns statistical steganalysis foiling on/off.\n"
+		"\t             The default is on.\n"
 #ifdef FOURIER
 		"\t-f           fourier transform modified image\n"
 #endif /* FOURIER */
 		;
 
+	char *progname;
 	FILE *fin = stdin, *fout = stdout;
 	image *image;
 	handler *srch = NULL, *dsth = NULL;
 	char *param = NULL;
 	unsigned char *encdata;
 	bitmap bitmap;	/* Extracted bits that we may modify */
-	iterator iter, titer;
+	iterator iter;
 	int j, ch, derive = 0;
 	stegres cumres, tmpres;
-	u_int16_t siter = 0, siterstart = 0, siter2 = 0, siterstart2 = 0;
+	config cfg1, cfg2;
 	u_char *data = NULL, *data2 = NULL;
-	int enclen, datalen, flags = 0;
+	int datalen;
 	char *key = "Default key", *key2 = NULL;
 	struct arc4_stream as, tas;
-	char mark = 0, useforbidden = 0, doretrieve = 0;
+	char mark = 0, doretrieve = 0;
 	char doerror = 0, doerror2 = 0;
+	char *cp;
+	int extractonly = 0, foil = 1;
 #ifdef FOURIER
 	char dofourier = 0;
 #endif /* FOURIER */
 
+	progname = argv[0];
 	steg_stat = 0;
 
+	memset(&cfg1, 0, sizeof(cfg1));
+	memset(&cfg2, 0, sizeof(cfg2));
+
+        if (strchr(argv[0], '/'))
+                cp = strrchr(argv[0], '/') + 1;
+        else
+                cp = argv[0];
+	if (!strcmp("extract", cp)) {
+		extractonly = 1;
+		doretrieve = 1;
+		argv++;
+		argc--;
+		goto aftergetop;
+	}
+
 	/* read command line arguments */
-	while ((ch = getopt(argc, argv, "eErmftp:s:S:i:I:k:d:D:K:x:")) != -1)
+	while ((ch = getopt(argc, argv, "eErmftp:s:S:i:I:k:d:D:K:x:F:")) != -1)
 		switch((char)ch) {
+		case 'F':
+			if (optarg[0] == '-')
+				foil = 0;
+			break;
 		case 'k':
 			key = optarg;
 			break;
 		case 'K':
 			key2 = optarg;
-			useforbidden = 1;
 			break;
 		case 'p':
 			param = optarg;
@@ -1006,10 +846,10 @@ main(int argc, char **argv)
 			derive = atoi(optarg);
 			break;
 		case 'i':
-			siter = atoi(optarg);
+			cfg1.siter = atoi(optarg);
 			break;
 		case 'I':
-			siter2 = atoi(optarg);
+			cfg2.siter = atoi(optarg);
 			break;
 		case 'r':
 			doretrieve = 1;
@@ -1018,10 +858,10 @@ main(int argc, char **argv)
 			steg_stat++;
 			break;
 		case 's':
-			siterstart = atoi(optarg);
+			cfg1.siterstart = atoi(optarg);
 			break;
 		case 'S':
-			siterstart2 = atoi(optarg);
+			cfg2.siterstart = atoi(optarg);
 			break;
 #ifdef FOURIER
 		case 'f':
@@ -1049,15 +889,16 @@ main(int argc, char **argv)
 		}
 
 	argc -= optind;
+	argv += optind;
 
+ aftergetop:    
 	if ((argc != 2 && argc != 0) ||
-	    (!doretrieve && data == NULL)) {
-		fprintf(stderr, usage, version, argv[0]);
+	    (extractonly && argc != 2) ||
+	    (!doretrieve && !extractonly && data == NULL)) {
+		fprintf(stderr, usage, version, progname);
 		exit(1);
 	}
 
-	argv += optind;
-    
 	if (argc == 2) {
 		srch = get_handler(argv[0]);
 		if (srch == NULL) {
@@ -1099,13 +940,20 @@ main(int argc, char **argv)
 		init_golay();
 	}
 
-	if (doerror)
-		flags |= STEG_ERROR;
-    
 	fprintf(stderr, "Reading %s....\n", argv[0]);
 	image = srch->read(fin);
-	fprintf(stderr, "Extracting usable bits ...\n");
-	if (doretrieve)
+	
+	if (extractonly) {
+		int bits;
+		/* Wen extracting get the bitmap from the source handler */
+		srch->get_bitmap(&bitmap, image, STEG_RETRIEVE);
+
+		fprintf(stderr, "Writing %d bits\n", bitmap.bits);
+		bits = htonl(bitmap.bits);
+		fwrite(&bits, 1, sizeof(int), fout);
+		fwrite(bitmap.bitmap, bitmap.bytes, sizeof(char), fout);
+		exit (1);
+	} else if (doretrieve)
 		/* Wen extracting get the bitmap from the source handler */
 		srch->get_bitmap(&bitmap, image, STEG_RETRIEVE);
 	else {
@@ -1114,50 +962,36 @@ main(int argc, char **argv)
 		/* When embedding the destination format determines the bits */
 		dsth->get_bitmap(&bitmap, image, 0);
 	}
+	fprintf(stderr, "Extracting usable bits:   %d bits\n", bitmap.bits);
 
-	/* Initialize random data stream */
-	arc4_initkey(&as, key, strlen(key));
-	tas = as;
-
-	iterator_init(&iter, &bitmap, &as); 
-
-	if (!doretrieve) {
-
-		if (mark)
-			flags |= STEG_MARK;
+	if (doerror)
+		cfg1.flags |= STEG_ERROR;
     
-		if (useforbidden)
-			flags |= STEG_FORBID;
+	if (!doretrieve) {
+		if (mark)
+			cfg1.flags |= STEG_MARK;
+		if (foil) {
+			dsth->preserve(&bitmap, -1);
+			if (bitmap.maxcorrect)
+				fprintf(stderr,
+					"Correctable message size: %d bits, %0.2f%%\n",
+					bitmap.maxcorrect,
+					(float)100*bitmap.maxcorrect/bitmap.bits);
+		}
 
-		/* Encode the data for us */
-		mmap_file(data, &data, &datalen);
-		enclen = datalen;
-		encdata = encode_data(data, &enclen, &tas, flags);
-		if (flags & STEG_ERROR)
-			fprintf(stderr, "Encoded data with ECC: %d\n", enclen);
-		else
-			fprintf(stderr, "Encoded data: %d\n", datalen);
-
-		munmap_file(data, datalen);
-
-		j = steg_find(&bitmap, &iter, &as, siter, siterstart,
-			      encdata, enclen, flags);
-
-		cumres = steg_embed(&bitmap, &iter, &as, encdata, enclen, j, flags | STEG_EMBED);
-
-		free(encdata);
+		do_embed(&bitmap, data, key, strlen(key), &cfg1, &cumres);
 
 		if (key2 && data2) {
 			char derivekey[128];
-			struct arc4_stream tas;
 			int i;
 
+			/* Flags from first configuration are being copied */
+			cfg2.flags = cfg1.flags;
 			if (doerror2)
-				flags |= STEG_ERROR;
+				cfg2.flags |= STEG_ERROR;
 			else
-				flags &= ~STEG_ERROR;
+				cfg2.flags &= ~STEG_ERROR;
 
-			encdata = NULL;
 			for (j = -1, i = 0; i <= derive && j < 0; i++) {
 #ifdef HAVE_SNPRINTF
 				snprintf(derivekey, 128, "%s%d", key2, i);
@@ -1166,30 +1000,10 @@ main(int argc, char **argv)
 #endif /* HAVE_SNPRINTF */
 				if (i == 0)
 					derivekey[strlen(key2)] = '\0';
-				arc4_initkey(&as, derivekey, strlen(derivekey));
-				iterator_init(&iter, &bitmap, &as); 
 
-				tas = as;
-				titer = iter;
-
-				if (encdata)
-					free (encdata);
-				/* Map the file and encode its data */
-				mmap_file(data2, &data, &datalen);
-				enclen = datalen;
-				encdata = encode_data(data, &enclen, &tas, flags);
-				if (flags & STEG_ERROR)
-					fprintf(stderr, "Encoded data with ECC: %d\n", enclen);
-				else
-					fprintf(stderr, "Encoded data: %d\n", datalen);
-				munmap_file(data, datalen);
-    
-				fprintf(stderr, "2nd Embedding key: %s, %x\n",
-					derivekey, arc4_getword(&tas));
-
-
-				j = steg_find(&bitmap, &titer, &as, siter2, siterstart2,
-					      encdata, enclen, flags);
+				j = do_embed(&bitmap, data2,
+					     derivekey, strlen(derivekey),
+					     &cfg2, &tmpres);
 			}
       
 			if (j < 0) {
@@ -1197,16 +1011,72 @@ main(int argc, char **argv)
 				exit (1);
 			}
 
-			tmpres = steg_embed(&bitmap, &iter, &as, encdata, enclen, j, flags | STEG_EMBED);
 			cumres.changed += tmpres.changed;
 			cumres.bias += tmpres.bias;
+		}
+
+		if (foil) {
+			int i, count;
+			double mean, dev, sq;
+			int n;
+			u_char cbit;
+			u_char *pbits = bitmap.bitmap;
+			u_char *data = bitmap.data;
+			u_char *plocked = bitmap.locked;
+    
+			memset(steg_offset, 0, sizeof(steg_offset));
+			steg_foil = steg_foilfail = 0;
+
+			for (i = 0; i < bitmap.bits; i++) {
+				if (!TEST_BIT(plocked, i))
+					continue;
+
+				cbit = TEST_BIT(pbits, i) ? 1 : 0;
+
+				if (cbit == (data[i] & 0x01))
+					continue;
+
+				n = bitmap.preserve(&bitmap, i);
+				if (n > 0) {
+					/* Actual modificaton */
+					n = abs(n - i);
+					if (n > MAX_SEEK)
+						n = MAX_SEEK;
+
+					steg_offset[n - 1]++;
+				}
+			}
+
+			/* Indicates that we are done with the image */
+			bitmap.preserve(&bitmap, bitmap.bits);
+
+			/* Calculate statistics */
+			count = 0;
+			mean = 0;
+			for (i = 0; i < MAX_SEEK; i++) {
+				count += steg_offset[i];
+				mean += steg_offset[i] * (i + 1);
+			}
+			mean /= count;
+
+			dev = 0;
+			for (i = 0; i < MAX_SEEK; i++) {
+				sq = (i + 1 - mean) * (i + 1 - mean);
+				dev += steg_offset[i] * sq;
+			}
+			
+			fprintf(stderr, "Foiling statistics: "
+				"corrections: %d, failed: %d, "
+				"offset: %f +- %f\n",
+				steg_foil, steg_foilfail,
+				mean, sqrt(dev / (count - 1)));
 		}
 
 		fprintf(stderr, "Total bits changed: %d (change %d + bias %d)\n",
 			cumres.changed + cumres.bias,
 			cumres.changed, cumres.bias);
 		fprintf(stderr, "Storing bitmap into data...\n");
-		dsth->put_bitmap (image, &bitmap, flags);
+		dsth->put_bitmap (image, &bitmap, cfg1.flags);
 
 #ifdef FOURIER
 		if (dofourier)
@@ -1217,9 +1087,16 @@ main(int argc, char **argv)
 		fprintf(stderr, "Writing %s....\n", argv[1]);
 		dsth->write(fout, image);
 	} else {
-		encdata = steg_retrieve(&datalen, &bitmap, &iter, &as, flags);
+		/* Initialize random data stream */
+		arc4_initkey(&as,  "Encryption", key, strlen(key));
+		tas = as;
+	  
+		iterator_init(&iter, &bitmap, key, strlen(key)); 
 
-		data = decode_data(encdata, &datalen, &tas, flags);
+		encdata = steg_retrieve(&datalen, &bitmap, &iter, &as,
+					cfg1.flags);
+
+		data = decode_data(encdata, &datalen, &tas, cfg1.flags);
 		free(encdata);
 
 		fwrite(data, datalen, sizeof(u_char), fout);

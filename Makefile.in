@@ -27,12 +27,22 @@ JPEGDEP		= $(JPEGDIR)/libjpeg.a
 # CFLAGS	+= -DFOURIER -I/usr/local/include
 # LIBS		+= -L/usr/local/lib -lrfftw -lfftw
 
-OBJ		= outguess.o golay.o arc.o pnm.o jpg.o @MD5OBJ@
+MISSING		= @LIBMISSING@
+OBJ		= outguess.o golay.o arc.o pnm.o jpg.o iterator.o
 
-all: outguess
+all: outguess extract histogram
 
-outguess: $(JPEGDEP) $(OBJ)
-	$(CC) $(CFLAGS) $(INCS) -o $@ $(OBJ) $(LDFLAGS) $(LIBS)
+$(MISSING):
+	$(CC) $(CFLAGS) $(INCS) -c @MISSINGOBJ@
+
+outguess: $(JPEGDEP) $(OBJ) $(MISSING)
+	$(CC) $(CFLAGS) $(INCS) -o $@ $(OBJ) $(MISSING) $(LDFLAGS) $(LIBS)
+
+histogram: histogram.o $(MISSING)
+	$(CC) $(CFLAGS) $(INCS) -o $@ histogram.o $(MISSING)
+
+extract: outguess
+	ln -sf outguess $@
 
 $(JPEGDEP):
 	cd $(JPEGDIR); $(MAKE) libjpeg.a
@@ -42,7 +52,7 @@ install: all
 	$(INSTALL_DATA) outguess.1 $(install_prefix)$(mandir)
 
 clean:
-	rm -f outguess *~ $(OBJ)
+	rm -f outguess extract histogram histogram.o *~ $(OBJ) $(MISSING)
 
 distclean: clean
 	cd $(JPEGDIR); $(MAKE) $@

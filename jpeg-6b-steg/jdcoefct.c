@@ -194,6 +194,13 @@ decompress_onepass (j_decompress_ptr cinfo, JSAMPIMAGE output_buf)
 	      yoffset+yindex < compptr->last_row_height) {
 	    output_col = start_col;
 	    for (xindex = 0; xindex < useful_width; xindex++) {
+	      {
+		/* Retrieve LSB from DCT coefficient */
+		JBLOCKROW block = coef->MCU_buffer[blkn + xindex];
+		int k;
+		for (k = 0; k < DCTSIZE2; k++)
+		  steg_use_bit((JCOEF) (*block)[k]);
+	      }   
 	      (*inverse_DCT) (cinfo, compptr,
 			      (JCOEFPTR) coef->MCU_buffer[blkn+xindex],
 			      output_ptr, output_col);

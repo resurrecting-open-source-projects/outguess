@@ -1,0 +1,30 @@
+/STIRMARK-README/1.1.1.1/Mon May  1 19:57:38 2000//
+/TODO/1.2/Mon May  1 20:09:05 2000//
+/arc.c/1.2/Mon May  1 21:47:58 2000//
+/arc.h/1.2/Mon May  1 21:47:58 2000//
+/config.h.bot/1.1.1.1/Mon May  1 19:57:38 2000//
+/fourier.c/1.2/Mon May  1 21:01:06 2000//
+/fourier.h/1.2/Mon May  1 21:01:06 2000//
+/golay.c/1.1.1.1/Mon May  1 19:57:38 2000//
+/golay.h/1.1.1.1/Mon May  1 19:57:38 2000//
+/install-sh/1.1.1.1/Mon May  1 19:57:38 2000//
+/jpeg-6b-steg.diff/1.1.1.1/Mon May  1 19:57:38 2000//
+/seek_script/1.1.1.1/Mon May  1 19:57:38 2000//
+D/jpeg-6b-steg////
+/jpg.h/1.2/Wed Jan 17 23:47:37 2001//
+/ChangeLog/1.3/Sat Jan 20 23:14:06 2001//
+/README/1.8/Tue Feb 13 00:05:25 2001//
+/iterator.c/1.4/Tue Feb 13 00:29:48 2001//
+/iterator.h/1.4/Tue Feb 13 00:30:08 2001//
+/jpg.c/1.9/Tue Feb 13 00:29:07 2001//
+/outguess.h/1.11/Tue Feb 13 00:29:19 2001//
+/pnm.c/1.4/Tue Feb 13 00:29:33 2001//
+/pnm.h/1.3/Tue Feb 13 00:29:28 2001//
+/outguess.1/1.7/Tue Feb 13 00:42:15 2001//
+D/missing////
+/config.h.in/1.3/Tue Feb 13 19:26:18 2001//
+/histogram.c/1.2/Tue Feb 13 19:57:38 2001//
+/outguess.c/1.16/Tue Feb 13 19:19:23 2001//
+/Makefile.in/1.5/Tue Feb 13 21:03:31 2001//
+/configure/1.4/Tue Feb 13 21:05:08 2001//
+/configure.in/1.4/Tue Feb 13 21:05:02 2001//

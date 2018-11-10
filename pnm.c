@@ -1,5 +1,5 @@
 /*
- * Copyright 1999 Niels Provos <provos@citi.umich.edu>
+ * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,12 +51,20 @@ handler pnm_handler = {
 	read_pnm,
 	write_pnm,
 	bitmap_from_pnm,
-	bitmap_to_pnm
+	bitmap_to_pnm,
+	preserve_pnm,
 };
 
 void
 init_pnm(char *parameter)
 {
+}
+
+int
+preserve_pnm(bitmap *bitmap, int off)
+{
+
+	return (-1);
 }
 
 /* skip whitespace and comments in PGM/PPM headers */
@@ -110,11 +118,15 @@ bitmap_from_pnm(bitmap *bitmap, image *image, int flags)
 	y = image->y;
 	depth = image->depth;
 
+	memset(bitmap, 0, sizeof(*bitmap));
+
 	bitmap->bits = x * y * depth;
 	bitmap->bytes = (bitmap->bits + 7) / 8;
 	bitmap->bitmap = checkedmalloc(bitmap->bytes);
 	bitmap->locked = checkedmalloc(bitmap->bytes);
+	bitmap->metalock = checkedmalloc(bitmap->bytes);
 	bitmap->detect = checkedmalloc(bitmap->bits);
+	bitmap->data = checkedmalloc(bitmap->bits);
 
 	memset (bitmap->locked, 0, bitmap->bytes);
 
@@ -129,6 +141,8 @@ bitmap_from_pnm(bitmap *bitmap, image *image, int flags)
 				bitmap->detect[i] = 1;
 			else
 				bitmap->detect[i] = 0;
+
+			bitmap->data[i] = img[i];
 
 			tmp |= ((img[i++] & (1 << BITSHIFT)) >> BITSHIFT) << j;
 		}
