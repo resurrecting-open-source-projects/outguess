@@ -1,5 +1,7 @@
-OutGuess 0.2
+OutGuess 0.2.1
 --------------
+2018-11-11 - Joao Eriberto Mota Filho <eriberto@eriberto.pro.br>,
+fully based in OutGuess 0.2, by
 2001-02-12 - Niels Provos <provos@citi.umich.edu>
 
 OutGuess is a universal steganographic tool that allows the insertion
@@ -12,7 +14,7 @@ will be used as concrete example of data objects, though OutGuess can
 use any kind of data, as long as a handler is provided.
 
 OutGuess is available under the BSD software license.  It is
-completely free for any use including commercial.  
+completely free for any use including commercial.
 
 Please see each source file for its respective license.  OutGuess was
 developed in Germany.
