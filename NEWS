@@ -1,0 +1,19 @@
+OutGuess 0.2.1
+--------------
+
+The project is alive in GitHub. You are welcome to help.
+
+This version is fully based in 0.2 version. All patches available in Debian
+was applied here. Some fixies from Chris Rorvick[1] also are applied. I did
+other adjustments too.
+
+[1] https://github.com/crorvick/outguess
+
+The jpeg-6b-steg/configure was removed because it have not a source code. See
+more details here[2]. It is not a problem because we need static library
+libjpeg.a only and we have a alternative Makefile to provide it inside the
+same directory.
+
+[2] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=882538
+
+ -- Joao Eriberto Mota Filho <eriberto@debian.org>  Sun, 11 Nov 2018 19:52:23 -0200
