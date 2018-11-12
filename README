@@ -19,7 +19,7 @@ completely free for any use including commercial.
 Please see each source file for its respective license.  OutGuess was
 developed in Germany.
 
-Steganography is the art and sience of hiding that communication is
+Steganography is the art and science of hiding that communication is
 happening.  Classical steganography systems depend on keeping the
 encoding system secret, but modern steganography are detectable only
 if secret information is known, e.g. a secret key.  Because of their
@@ -69,11 +69,11 @@ of changed bits.  Because we do not care about the actual content of
 the cover data we send, this is a very viable approach.
 
 Additionally, OutGuess allows to hide multiple messages in the data.
-Thus, it also provides plausible deniablity.  It keeps track of the
+Thus, it also provides plausible deniability.  It keeps track of the
 bits that have been modified previously and locks them.  A (23,12,7)
 Golay code is used for error correction to tolerate collisions on
-locked bits.  Artifical errors are introduced to avoid modifying bits
-that have a hight bias.
+locked bits.  Artificial errors are introduced to avoid modifying bits
+that have a high bias.
 
 This version of OutGuess can insert only two different messages.
 As this is a BETA version, I would like you to give me feedback on
@@ -81,6 +81,11 @@ the usefulness of OutGuess.  And if you like it, you can support
 me via the links on
 
   http://www.outguess.org/
+
+Note, by Eriberto: all text shown here was originally written by
+Niels Provos for OutGuess =< 0.2. The current site for OutGuess is:
+
+  https://github.com/eribertomota/outguess
 
 Installation
 ------------
@@ -99,6 +104,9 @@ If your system is not supported, trying building by hand as follows
    ftp://ftp.uu.net/graphics/jpeg/jpegsrc.v6b.tar.gz.
    The Makefile expects the library to be at ../jpeg-6b.
 
+Note, by Eriberto: currently, the jpeg-6b can be found at
+https://www.ijg.org/files/
+
 2. Edit the Makefile and type make
 
 OutGuess has only been tested on OpenBSD, Linux, Solaris and AIX.
@@ -112,9 +120,9 @@ Acknowledgments:
 OutGuess uses code from, attributions can also be found in the sources,
 
  Markus Kuhn's Stirmark software, see STIRMARK-README.
- 
+
  the Independent JPEG Group's JPEG software, see JPEG_README.
- 
+
  the Arc4 random number generator for OpenBSD, (c) 1996 by
  David Mazieres <dm@lcs.mit.edu>.
 
