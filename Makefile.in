@@ -46,7 +46,7 @@ extract: outguess
 	ln -sf outguess $@
 
 $(JPEGDEP):
-	cd $(JPEGDIR); $(MAKE) -f makefile.ansi CFLAGS=-DHAVE_STDC_HEADERS libjpeg.a
+	$(MAKE) -C $(JPEGDIR) -f makefile.ansi 'CC=$(CC)' CFLAGS=-DHAVE_STDC_HEADERS libjpeg.a
 
 install: all
 	$(INSTALL_PROG) -m 755 outguess $(install_prefix)$(bindir)
