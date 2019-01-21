@@ -1,8 +1,14 @@
+OutGuess 0.2.2
+--------------
+2019-01-21 - Joao Eriberto Mota Filho <eriberto@eriberto.pro.br>
+ - Using a right compiler to fix cross compiling issues.
+   See Debian bug #913545 for details.
+
 OutGuess 0.2.1
 --------------
 2018-11-11 - Joao Eriberto Mota Filho <eriberto@eriberto.pro.br>
  - Added a NEWS file.
- - Fix an issue in configure.in and allow autoreconf.
+ - Fixed an issue in configure.in and allow autoreconf.
  - Fixed some GCC warnings.
  - Fixed some spelling errors in final binaries.
  - Fixed spelling errors in outguess manpage.
