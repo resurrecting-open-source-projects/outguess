@@ -1,5 +1,6 @@
 # OutGuess 0.1 Makefile (c) 1999 Niels Provos
 # 2018 Frédéric Bonnard <frediz@debian.org>
+# 2019 Helmut Grohne <helmut@subdivi.de>
 
 srcdir		= @srcdir@
 VPATH		= @srcdir@
