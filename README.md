@@ -125,8 +125,10 @@ None known at the moment.
 OutGuess uses code from the following projects.
 Attributions can also be found in the sources.
 
-* Markus Kuhn's Stirmark software, see STIRMARK-README
-* the Independent JPEG Group's JPEG software, see JPEG_README
+* Markus Kuhn's Stirmark software,
+  see [STIRMARK-README](STIRMARK-README)
+* the Independent JPEG Group's JPEG software,
+  see [jpeg-6b-steg/README](jpeg-6b-steg/README)
 * the Arc4 random number generator for OpenBSD, (c) 1996 by
   _David Mazieres <dm@lcs.mit.edu>_
 * free MD5 code by Colin Plumb
