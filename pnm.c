@@ -103,8 +103,9 @@ bitmap_to_pnm(image *image, bitmap *bitmap, int flags)
 			if ((flags & STEG_MARK) && TEST_BIT(bitmap->locked, i))
 				img[i] = 255;
 
-			img[i] = (img[i++] & ~(1 << BITSHIFT)) |
+			img[i] = (img[i] & ~(1 << BITSHIFT)) |
 				((tmp & 1) << BITSHIFT);
+			i++;
 			tmp >>= 1;
 		}
 	}
