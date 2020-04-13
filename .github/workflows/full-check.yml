@@ -1,0 +1,30 @@
+name: full-check
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: first_build
+      run: |
+           autoreconf -fi
+           cp jpeg-6b-steg/jconfig.cfg jpeg-6b-steg/jconfig.h
+           ./configure
+           make
+           sudo make install
+           sudo make uninstall
+           make clean 
+    - name: second_build
+      run: |
+           autoreconf -fi
+           cp jpeg-6b-steg/jconfig.cfg jpeg-6b-steg/jconfig.h
+           ./configure
+           make
+           sudo make install
+    - name: run_program
+      run: |
+           outguess
