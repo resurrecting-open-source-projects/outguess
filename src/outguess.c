@@ -588,6 +588,14 @@ encode_data(u_char *data, int *len, struct arc4_stream *as, int flags)
 		encdata = checkedmalloc(datalen * sizeof(u_char));
 	}
 
+	if (datalen > 0 && (data == NULL || as == NULL)) {
+		/*
+		 * As of 13. April 2020, this branch wil never be triggered,
+		 * but we keep it to prevent possible future bugs,
+		 * and to make static code-checkers happy.
+		 */
+		return NULL;
+	}
 	/* Encryption */
 	for (j = 0; j < datalen; j++)
 		encdata[j] = data[j] ^ arc4_getbyte(as);
