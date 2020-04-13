@@ -186,8 +186,6 @@ steg_embedchunk(bitmap *bitmap, iterator *iter,
 		uint32_t data, int bits, int embed)
 {
 	int i = ITERATOR_CURRENT(iter);
-	uint8_t bit;
-	uint32_t val;
 	char *pbits, *plocked;
 	int nbits;
 
@@ -206,8 +204,8 @@ steg_embedchunk(bitmap *bitmap, iterator *iter,
 		}
 		steg_encoded--;
 
-		bit = TEST_BIT(pbits, i) ? 1 : 0;
-		val = bit ^ (data & 1);
+		uint8_t bit = TEST_BIT(pbits, i) ? 1 : 0;
+		uint32_t val = bit ^ (data & 1);
 		steg_count++;
 		if (val == 1) {
 			steg_mod += bitmap->detect[i];
@@ -410,7 +408,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 	  char *data, int datalen, int flags)
 {
 	int half;
-	int j, i, size = 0;
+	int j;
 	struct arc4_stream tas;
 	iterator titer;
 	uint16_t *chstats = NULL;
@@ -422,6 +420,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 		siter = DEFAULT_ITER;
 
 	if (siter && siterstart < siter) {
+		int size = 0;
 		if (steg_stat) {
 			/* Collect stats about changed bit */
 			size = siter - siterstart;
@@ -432,7 +431,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 		fprintf(stderr, "Finding best embedding...\n");
 		int changed = -1, chmin = -1, chmax = -1; j = -STEG_ERR_HEADER;
 
-		for (i = siterstart; i < siter; i++) {
+		for (int i = siterstart; i < siter; i++) {
 			titer = *iter;
 			tas = *as;
 			result = steg_embed(bitmap, &titer, &tas,
@@ -480,7 +479,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 			chtab = checkedmalloc(count * sizeof(uint16_t));
 			memset(chtab, 0, count * sizeof(uint16_t));
 
-			for (i = 0; i < size; i++)
+			for (int i = 0; i < size; i++)
 				if (chstats[i] > 0) {
 					mean += chstats[i];
 					cnt++;
@@ -490,7 +489,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 
 			mean = mean / cnt;
 			dev = 0;
-			for (i = 0; i < size; i++)
+			for (int i = 0; i < size; i++)
 				if (chstats[i] > 0) {
 					sq = chstats[i] - mean;
 					dev += sq * sq;
@@ -502,7 +501,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 				chmax);
 
 			if (steg_stat > 1)
-				for (i = 0; i < count; i++) {
+				for (int i = 0; i < count; i++) {
 					if (!chtab[i])
 						continue;
 					fprintf(stderr, "%d: %.9f\n",
@@ -526,12 +525,11 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 char *
 encode_data(char *data, size_t *len, struct arc4_stream *as, int flags)
 {
-	size_t j, datalen = *len;
+	size_t datalen = *len;
 	char *encdata;
 
 	if (flags & STEG_ERROR) {
 		int eclen, i = 0, length = 0;
-		uint32_t tmp;
 		uint64_t code = 0;
 		uint8_t edata[3];
 
@@ -552,17 +550,17 @@ encode_data(char *data, size_t *len, struct arc4_stream *as, int flags)
 				memcpy(edata, data, adj);
 
 				/* Self describing padding */
-				for (j = 2; j >= adj; j--)
+				for (size_t j = 2; j >= adj; j--)
 					edata[j] = j - adj;
 			}
-			tmp = edata[0];
+			uint32_t tmp = edata[0];
 			tmp |= edata[1] << 8;
 			tmp |= edata[2] << 16;
 
 			data += 3;
 			datalen -= 3;
 
-			for (j = 0; j < 2; j++) {
+			for (size_t j = 0; j < 2; j++) {
 				code |= ENCODE(tmp & DATAMASK) << length;
 				length += CODEBITS;
 				while (length >= 8) {
@@ -589,7 +587,7 @@ encode_data(char *data, size_t *len, struct arc4_stream *as, int flags)
 	}
 
 	/* Encryption */
-	for (j = 0; j < datalen; j++)
+	for (size_t j = 0; j < datalen; j++)
 		encdata[j] = data[j] ^ arc4_getbyte(as);
 
 	*len = datalen;
@@ -600,7 +598,9 @@ encode_data(char *data, size_t *len, struct arc4_stream *as, int flags)
 char *
 decode_data(char *encdata, size_t *len, struct arc4_stream *as, int flags)
 {
-	size_t i, j, enclen = *len, declen;
+	int j;
+	size_t enclen = *len;
+	size_t declen;
 	char *data;
 
 	for (j = 0; j < enclen; j++)
@@ -613,6 +613,7 @@ decode_data(char *encdata, size_t *len, struct arc4_stream *as, int flags)
 		data = checkedmalloc(declen * sizeof(uint8_t));
 
 		etmp = dtmp = 0;
+		size_t i;
 		for (i = 0, j = 0; i < enclen && j < declen; ) {
 			while (outbits < CODEBITS) {
 				etmp |= TDECODE(encdata + i, enclen)<< outbits;

@@ -92,14 +92,12 @@ skip_white(FILE *f)
 void
 bitmap_to_pnm(image *image, bitmap *bitmap, int flags)
 {
-	size_t i, j, off;
-	uint8_t tmp;
 	uint8_t *img = image->img;
 
-	off = 0;
-	for (i = 0; i < bitmap->bits; ) {
-		tmp = bitmap->bitmap[off++];
-		for (j = 0; j < 8 && i < bitmap->bits; j++) {
+	size_t off = 0;
+	for (size_t i = 0; i < bitmap->bits; ) {
+		uint8_t tmp = bitmap->bitmap[off++];
+		for (size_t j = 0; j < 8 && i < bitmap->bits; j++) {
 			if ((flags & STEG_MARK) && TEST_BIT(bitmap->locked, i))
 				img[i] = 255;
 
@@ -114,8 +112,7 @@ bitmap_to_pnm(image *image, bitmap *bitmap, int flags)
 void
 bitmap_from_pnm(bitmap *bitmap, image *image, int flags)
 {
-	size_t i, j, off;
-	uint8_t tmp;
+	size_t off;
 	uint8_t *img;
 	int x, y, depth;
 
@@ -137,9 +134,9 @@ bitmap_from_pnm(bitmap *bitmap, image *image, int flags)
 	memset (bitmap->locked, 0, bitmap->bytes);
 
 	off = 0;
-	for (i = 0; i < bitmap->bits; ) {
-		tmp = 0;
-		for (j = 0; j < 8 && i < bitmap->bits; j++) {
+	for (size_t i = 0; i < bitmap->bits; ) {
+		uint8_t tmp = 0;
+		for (size_t j = 0; j < 8 && i < bitmap->bits; j++) {
 			/* Weight image modifications */
 			if (img[i] >= PNM_THRES_MAX)
 				bitmap->detect[i] = -1;

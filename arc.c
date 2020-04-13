@@ -55,9 +55,7 @@
 void
 arc4_init(struct arc4_stream *as)
 {
-	int     n;
-
-	for (n = 0; n < 256; n++)
+	for (size_t n = 0; n < 256; n++)
 		as->s[n] = n;
 	as->i = 0;
 	as->j = 0;
@@ -66,12 +64,10 @@ arc4_init(struct arc4_stream *as)
 uint8_t
 arc4_getbyte(struct arc4_stream *as)
 {
-	uint8_t si, sj;
-
 	as->i = (as->i + 1);
-	si = as->s[as->i];
+	uint8_t si = as->s[as->i];
 	as->j = (as->j + si);
-	sj = as->s[as->j];
+	uint8_t sj = as->s[as->j];
 	as->s[as->i] = sj;
 	as->s[as->j] = si;
 	return (as->s[(si + sj) & 0xff]);
@@ -92,13 +88,10 @@ arc4_getword(as)
 void
 arc4_addrandom(struct arc4_stream *as, uint8_t *dat, size_t datlen)
 {
-        int     n;
-        uint8_t si;
-
         as->i--;
-        for (n = 0; n < 256; n++) {
+        for (size_t n = 0; n < 256; n++) {
                 as->i = (as->i + 1);
-                si = as->s[as->i];
+                uint8_t si = as->s[as->i];
                 as->j = (as->j + si + dat[n % datlen]);
                 as->s[as->i] = as->s[as->j];
                 as->s[as->j] = si;
