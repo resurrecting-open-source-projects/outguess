@@ -87,11 +87,11 @@ arr2int(int *a, int r)
  */
 {
    int i;
-   long mul, result = 0, temp;
+   long result = 0;
  
    for (i = 1; i <= r; i++) {
-      mul = 1;
-      temp = a[i]-1;
+      long mul = 1;
+      long temp = a[i]-1;
       while (temp--)
          mul = mul << 1;
       result += mul;
@@ -133,9 +133,8 @@ get_syndrome(long pattern)
  * obtain its syndrome in decoding.
  */
 {
-  long aux = X22;
- 
   if (pattern >= X11) {
+    long aux = X22;
     while (pattern & MASK12) {
       while (!(aux & pattern))
 	aux = aux >> 1;

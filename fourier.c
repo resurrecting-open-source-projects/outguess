@@ -122,7 +122,7 @@ fft_transform(int xdim, int ydim, unsigned char *data,
 	       double *mre, double *mim, double *mmod)
 {
 	rfftwnd_plan p;
-	int i,j, ind, di, dj;
+	int i,j, ind, di;
 	double maxre, maxim, maxmod, val;
 	fftw_complex *a;
   
@@ -135,7 +135,7 @@ fft_transform(int xdim, int ydim, unsigned char *data,
 
 	di = 1;
 	for (j = 0; j < ydim; j++) {
-		dj = di;
+		int dj = di;
 		for (i = 0; i < xdim ; i++) {
 			ind = i + j * xdim;
 			a[ind].re = data[ind] * dj;
