@@ -1025,7 +1025,7 @@ main(int argc, char **argv)
 			int n;
 			u_char cbit;
 			u_char *pbits = bitmap.bitmap;
-			u_char *data = bitmap.data;
+			u_char *bdata = bitmap.data;
 			u_char *plocked = bitmap.locked;
     
 			memset(steg_offset, 0, sizeof(steg_offset));
@@ -1037,7 +1037,7 @@ main(int argc, char **argv)
 
 				cbit = TEST_BIT(pbits, i) ? 1 : 0;
 
-				if (cbit == (data[i] & 0x01))
+				if (cbit == (bdata[i] & 0x01))
 					continue;
 
 				n = bitmap.preserve(&bitmap, i);
