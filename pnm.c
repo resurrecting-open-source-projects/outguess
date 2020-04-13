@@ -29,7 +29,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
- 
+
 /* This source code is derived in parts from
  *   StirMark -- Experimental watermark resilience testkit
  *   Markus Kuhn <mkuhn@acm.org>, University of Cambridge
@@ -77,7 +77,7 @@ void
 skip_white(FILE *f)
 {
 	int c;
-  
+
 	do {
 		while (isspace(c = getc(f)));
 		if (c == '#')
@@ -197,11 +197,11 @@ read_pnm(FILE *fin)
 		fprintf(stderr, "Unsupported input file type 'P%c'!\n", magic[1]);
 		exit(1);
 	}
-  
+
 	image->img = (unsigned char *) checkedmalloc(sizeof(unsigned char) *
 						     image->x * image->y *
 						     image->depth);
-  
+
 	switch (magic[1]) {
 	case '2': /* PGM ASCII */
 	case '3': /* PPM ASCII */

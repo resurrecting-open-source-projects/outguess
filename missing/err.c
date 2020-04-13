@@ -47,7 +47,7 @@ void
 err(int eval, const char *fmt, ...)
 {
 	va_list ap;
-	
+
 	va_start(ap, fmt);
 	if (fmt != NULL) {
 		(void)vfprintf(stderr, fmt, ap);
@@ -62,7 +62,7 @@ void
 warn(const char *fmt, ...)
 {
 	va_list ap;
-	
+
 	va_start(ap, fmt);
 	if (fmt != NULL) {
 		(void)vfprintf(stderr, fmt, ap);
@@ -76,7 +76,7 @@ void
 errx(int eval, const char *fmt, ...)
 {
 	va_list ap;
-	
+
 	va_start(ap, fmt);
 	if (fmt != NULL)
 		(void)vfprintf(stderr, fmt, ap);
@@ -89,7 +89,7 @@ void
 warnx(const char *fmt, ...)
 {
 	va_list ap;
-	
+
 	va_start(ap, fmt);
 	if (fmt != NULL)
 		(void)vfprintf(stderr, fmt, ap);

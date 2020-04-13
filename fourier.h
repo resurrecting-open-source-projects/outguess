@@ -31,7 +31,7 @@
 #ifndef _FOURIER_H
 #define _FOURIER_H
 
-int split_colors(u_char **pred, u_char **pgreen, u_char **pblue, 
+int split_colors(u_char **pred, u_char **pgreen, u_char **pblue,
 		  u_char *img, int xdim, int ydim, int depth);
 
 void fft_visible(int xdim, int ydim, fftw_complex *c, u_char *img,

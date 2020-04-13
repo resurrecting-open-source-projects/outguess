@@ -47,7 +47,7 @@
 
 #include "arc.h"
 
-/* 
+/*
  * An arc4 stream generator is used for encryption and pseudo-random
  * numbers.
  */

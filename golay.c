@@ -21,9 +21,9 @@
  *
  * Because of its relatively low length (23), dimension (12) and number of
  * redundant bits (11), the binary (23,12,7) Golay code can be encoded and
- * decoded simply by using look-up tables. The program below uses a 16K 
+ * decoded simply by using look-up tables. The program below uses a 16K
  * encoding table and an 8K decoding table.
- * 
+ *
  * For more information, suggestions, or other ideas on implementing error
  * correcting codes, please contact me at (I'm temporarily in Japan, but
  * below is my U.S. address):
@@ -38,7 +38,7 @@
  *                 extended Golay code.
  *
  * COPYRIGHT NOTICE: This computer program is free for non-commercial purposes.
- * You may implement this program for any non-commercial application. You may 
+ * You may implement this program for any non-commercial application. You may
  * also implement this program for commercial purposes, provided that you
  * obtain my written permission. Any modification of this program is covered
  * by this copyright.
@@ -88,7 +88,7 @@ arr2int(int *a, int r)
 {
    int i;
    long result = 0;
- 
+
    for (i = 1; i <= r; i++) {
       long mul = 1;
       long temp = a[i]-1;
@@ -106,7 +106,7 @@ nextcomb(int n, int r, int *a)
  */
 {
   int  i, j;
- 
+
   a[r]++;
   if (a[r] <= n)
     return;
@@ -161,7 +161,7 @@ init_golay(void)
    * integer whose 23 least significant bits are coded bits: Of these, the
    * 12 most significant bits are information bits and the 11 least
    * significant bits are redundant bits (systematic encoding).
-   * --------------------------------------------------------------------- 
+   * ---------------------------------------------------------------------
    */
   for (pattern = 0; pattern < 4096; pattern++) {
     temp = pattern << 11;          /* multiply information by X^{11} */
@@ -176,19 +176,19 @@ init_golay(void)
    * is the most likely error pattern. First an error pattern is generated.
    * Then its syndrome is calculated and used as a pointer to the table
    * where the error pattern value is stored.
-   * --------------------------------------------------------------------- 
-   *            
+   * ---------------------------------------------------------------------
+   *
    * (1) Error patterns of WEIGHT 1 (SINGLE ERRORS)
    */
   decoding_table[0] = 0;
   decoding_table[1] = 1;
-  temp = 1; 
+  temp = 1;
   for (i = 2; i <= 23; i++) {
     temp *= 2;
     decoding_table[get_syndrome(temp)] = temp;
   }
 
-  /*            
+  /*
    * (2) Error patterns of WEIGHT 2 (DOUBLE ERRORS)
    */
   a[1] = 1; a[2] = 2;
@@ -199,7 +199,7 @@ init_golay(void)
     temp = arr2int(a,2);
     decoding_table[get_syndrome(temp)] = temp;
   }
-  /*            
+  /*
    * (3) Error patterns of WEIGHT 3 (TRIPLE ERRORS)
    */
   a[1] = 1; a[2] = 2; a[3] = 3;

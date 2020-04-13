@@ -132,8 +132,8 @@ preserve_single(bitmap *bitmap, int off, char coeff)
 			WRITE_BIT(pbits, i, cbit ^ 0x01);
 
 			WRITE_BIT(pmetalock, i, 1);
-			
-			if (jpeg_eval) 
+
+			if (jpeg_eval)
 				fprintf(stderr,
 					"off: %d, i: %d, coeff: %d, data: %d\n",
 					off, i, coeff, data[i]);
@@ -674,8 +674,8 @@ read_JPEG_file (FILE *infile)
    * output image dimensions available, as well as the output colormap
    * if we asked for color quantization.
    * In this example, we need to make an output work buffer of the right size.
-   */ 
-  
+   */
+
   image->x = cinfo.output_width;
   image->y = cinfo.output_height;
   image->depth = cinfo.output_components;

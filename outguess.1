@@ -53,7 +53,7 @@ could use any kind of data, as long as a handler were provided.
 uses a generic iterator object to select which bits in the data should
 be modified.  A seed can be used to modify the behavior of the
 iterator. It is embedded in the data along with the rest of the
-message.  By altering the seed, 
+message.  By altering the seed,
 .I outguess
 tries to find a sequence of bits that minimizes the number of changes
 in the data that have to be made.
@@ -105,7 +105,7 @@ Other options that apply to the general execution of
 .TP
 .B \-r
 Retrieve a message from a data object.  If this option is not
-specified, 
+specified,
 .I outguess
 will embed messages.
 .TP
@@ -131,14 +131,14 @@ For embedding messages, you need to specify a source and a destination
 filename.
 .I Outguess
 determines the data format by the filename extension.  If no filenames
-are specified 
+are specified
 .I outguess
 operates as a filter and assumes the PPM data format.
 .SH EXAMPLES
 .LP
 To embed the message
 .I hidden.txt
-into the 
+into the
 .I monkey.jpg
 image:
 .IP
@@ -168,7 +168,7 @@ If you want to embed a second message, use:
 .I hide2.txt monkey.jpg out.jpg
 .PP
 .I Outguess
-will first embed 
+will first embed
 .I hide1.txt
 and then
 .I hide2.txt

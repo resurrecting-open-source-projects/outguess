@@ -59,7 +59,7 @@ typedef struct _handler {
 	void (*put_bitmap)(image *, bitmap *, int);
 	int (*preserve)(bitmap *, int);
 } handler;
-	
+
 extern handler pnm_handler;
 
 void skip_white(FILE *f);

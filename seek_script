@@ -22,7 +22,7 @@ do
 	echo -n "$name "
 	RESULT=`$OUTGUESS $ARGS $name $TMPNAME 2>&1 |grep "^Total" | awk '{print $4}'`
 	if [ -z "$RESULT" ] ; then
-		rm $TMPNAME	
+		rm $TMPNAME
 		echo "not possible to embed data"
 		continue;
 	else
@@ -36,7 +36,7 @@ do
 		NAME=$name
 		mv $TMPNAME $OUTPUT
 		echo NEW best image: $name
-	else	
+	else
 		rm $TMPNAME
 	fi
 done

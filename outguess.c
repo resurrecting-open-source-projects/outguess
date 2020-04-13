@@ -98,7 +98,7 @@ handler *
 get_handler(char *name)
 {
 	int i;
-	
+
 	if (!(name = strrchr(name, '.')))
 		return NULL;
 	name++;
@@ -114,12 +114,12 @@ void *
 checkedmalloc(size_t n)
 {
 	void *p;
-  
+
 	if (!(p = malloc(n))) {
 		fprintf(stderr, "checkedmalloc: not enough memory\n");
 		exit(1);
 	}
-  
+
 	return p;
 }
 
@@ -132,7 +132,7 @@ checkedmalloc(size_t n)
 void
 steg_adjust_errors(bitmap *bitmap, int flags)
 {
-	int i, j, n, many, flag; 
+	int i, j, n, many, flag;
 	int priority[ERRORBITS], detect[ERRORBITS];
 
 	many = ERRORBITS - steg_errors;
@@ -271,7 +271,7 @@ steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 	tmpbuf[1] = seed >> 8;
 	tmpbuf[2] = datalen & 0xff;
 	tmpbuf[3] = datalen >> 8;
-	
+
 	/* Encode the admin data XXX maybe derive another stream */
 	len = 4;
 	encbuf = encode_data (tmpbuf, &len, as, embed);
@@ -279,7 +279,7 @@ steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 	for (i = 0; i < len; i++)
 		if (!steg_embedchunk(bitmap, iter, encbuf[i], 8, embed)) {
 			free (encbuf);
-			
+
 			/* If we use error correction or a bit in the seed
 			 * was locked, we can go on, otherwise we have to fail.
 			 */
@@ -299,7 +299,7 @@ steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 
 	while (ITERATOR_CURRENT(iter) < bitmap->bits && datalen > 0) {
 		iterator_adapt(iter, bitmap, datalen);
-		
+
 		tmp = *data++;
 		datalen--;
 
@@ -418,7 +418,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 	stegres result;
 
 	half = datalen * 8 / 2;
-	
+
 	if (!siter && !siterstart)
 		siter = DEFAULT_ITER;
 
@@ -444,7 +444,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 			else if (result.error)
 				continue;
 
-			/* 
+			/*
 			 * Only count bias, if we do not modifiy many
 			 * extra bits for statistical foiling.
 			 */
@@ -462,10 +462,10 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 				changed = tch;
 				j = i;
 				fprintf(stderr, "%5d: %5d(%3.1f%%)[%3.1f%%], bias %5d(%1.2f), saved: % 5d, total: %5.2f%%\n",
-					j, result.changed, 
+					j, result.changed,
 					(float) 100 * steg_mis / steg_count,
 					(float) 100 * steg_mis / steg_data,
-					result.bias, 
+					result.bias,
 					(float)result.bias / steg_mis,
 					(half - result.changed) / 8,
 					(float) 100 * steg_mis / bitmap->bits);
@@ -574,7 +574,7 @@ encode_data(u_char *data, int *len, struct arc4_stream *as, int flags)
 				tmp >>= DATABITS;
 			}
 		}
-    
+
 		/* Encode the rest */
 		if (length > 0)
 			encdata[i++] = code & 0xff;
@@ -606,7 +606,7 @@ decode_data(u_char *encdata, int *len, struct arc4_stream *as, int flags)
 
 	for (j = 0; j < enclen; j++)
 		encdata[j] = encdata[j] ^ arc4_getbyte(as);
-  
+
 	if (flags & STEG_ERROR) {
 		u_int32_t inbits = 0, outbits = 0, etmp, dtmp;
 
@@ -677,8 +677,8 @@ do_embed(bitmap *bitmap, u_char *filename, u_char *key, u_int klen,
 	/* Initialize random data stream */
 	arc4_initkey(&as,  "Encryption", key, klen);
 	tas = as;
-		
-	iterator_init(&iter, bitmap, key, klen); 
+
+	iterator_init(&iter, bitmap, key, klen);
 
 	/* Encode the data for us */
 	mmap_file(filename, &data, &datalen);
@@ -895,7 +895,7 @@ main(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
- aftergetop:    
+ aftergetop:
 	if ((argc != 2 && argc != 0) ||
 	    (extractonly && argc != 2) ||
 	    (!doretrieve && !extractonly && data == NULL)) {
@@ -946,7 +946,7 @@ main(int argc, char **argv)
 
 	fprintf(stderr, "Reading %s....\n", argv[0]);
 	image = srch->read(fin);
-	
+
 	if (extractonly) {
 		int bits;
 		/* Wen extracting get the bitmap from the source handler */
@@ -970,7 +970,7 @@ main(int argc, char **argv)
 
 	if (doerror)
 		cfg1.flags |= STEG_ERROR;
-    
+
 	if (!doretrieve) {
 		if (mark)
 			cfg1.flags |= STEG_MARK;
@@ -1009,7 +1009,7 @@ main(int argc, char **argv)
 					     derivekey, strlen(derivekey),
 					     &cfg2, &tmpres);
 			}
-      
+
 			if (j < 0) {
 				fprintf(stderr, "Failed to find embedding.\n");
 				exit (1);
@@ -1027,7 +1027,7 @@ main(int argc, char **argv)
 			u_char *pbits = bitmap.bitmap;
 			u_char *bdata = bitmap.data;
 			u_char *plocked = bitmap.locked;
-    
+
 			memset(steg_offset, 0, sizeof(steg_offset));
 			steg_foil = steg_foilfail = 0;
 
@@ -1068,7 +1068,7 @@ main(int argc, char **argv)
 				sq = (i + 1 - mean) * (i + 1 - mean);
 				dev += steg_offset[i] * sq;
 			}
-			
+
 			fprintf(stderr, "Foiling statistics: "
 				"corrections: %d, failed: %d, "
 				"offset: %f +- %f\n",
@@ -1094,8 +1094,8 @@ main(int argc, char **argv)
 		/* Initialize random data stream */
 		arc4_initkey(&as,  "Encryption", key, strlen(key));
 		tas = as;
-	  
-		iterator_init(&iter, &bitmap, key, strlen(key)); 
+
+		iterator_init(&iter, &bitmap, key, strlen(key));
 
 		encdata = steg_retrieve(&datalen, &bitmap, &iter, &as,
 					cfg1.flags);

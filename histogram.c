@@ -28,7 +28,7 @@ histogram_simple(u_char *data, int bits)
 			one++;
 		else
 			zero++;
-	
+
 	fprintf(stdout, "Bits: %6d\n", bits);
 	fprintf(stdout, "One:  %6d, %f\n", one, (float)one/bits);
 	fprintf(stdout, "Zero: %6d, %f\n", zero, (float)zero/bits);
@@ -74,7 +74,7 @@ main(int argc, char *argv[])
 	int bits, bytes, res;
 
 	progname = argv[0];
-	
+
 	argv++;
 	argc--;
 
@@ -82,7 +82,7 @@ main(int argc, char *argv[])
 		usage();
 		exit(1);
 	}
-	
+
 	if ((fin = fopen(argv[0], "r")) == NULL)
 		err(1, "fopen");
 

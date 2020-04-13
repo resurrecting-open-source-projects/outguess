@@ -33,7 +33,7 @@
 
 /* if depth > 1 */
 int
-split_colors(u_char **pred, u_char **pgreen, u_char **pblue, 
+split_colors(u_char **pred, u_char **pgreen, u_char **pblue,
 	     u_char *img,
 	     int xdim, int ydim, int depth)
 {
@@ -69,7 +69,7 @@ fft_image(int xdim, int ydim, int depth, u_char *img)
 	double maxre, maxim, maxmod;
 
 	split_colors(&red, &green, &blue, img, xdim, ydim, depth);
-  
+
 	maxre = maxim = maxmod = 0;
 	c = fft_transform(xdim, ydim, red, &maxre, &maxim, &maxmod);
 	d = fft_transform(xdim, ydim, green, &maxre, &maxim, &maxmod);
@@ -125,7 +125,7 @@ fft_transform(int xdim, int ydim, unsigned char *data,
 	int i,j, ind, di;
 	double maxre, maxim, maxmod, val;
 	fftw_complex *a;
-  
+
 	fprintf(stderr, "Starting complex 2d FFT\n");
 
 	a = checkedmalloc(xdim * ydim * sizeof(fftw_complex));
