@@ -149,6 +149,14 @@ If your system is not supported, try building by hand as follows:
 
 None known at the moment.
 
+You may want to check the code from time to time
+with a static code checker like [CppCheck](http://cppcheck.sourceforge.net/):
+
+```bash
+cppcheck --enable=all *.c &> cppcheck_log.txt
+less cppcheck_log.txt
+```
+
 ## Acknowledgments
 
 OutGuess uses code from the following projects.
