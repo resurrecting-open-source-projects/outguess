@@ -102,7 +102,7 @@ fft_visible(int xdim, int ydim, fftw_complex *c, u_char *img,
 	contrast = exp((-100.5) * log(xdim*ydim) / 256);
 	factor = - 255.0;
 	total = 0;
-	scale = factor / log(maxmod * contrast * contrast + 1.0);
+	scale = factor / log1p(maxmod * contrast * contrast);
 
 	printf("Visible: max (%f/%f/%f), contrast: %f, scale: %f\n",
 	       maxre, maxim, maxmod, contrast, scale);
@@ -110,9 +110,9 @@ fft_visible(int xdim, int ydim, fftw_complex *c, u_char *img,
 	for (i = 0; i < xdim ; i++)
 		for (j = 0; j < ydim; j++) {
 			ind = j*xdim + i;
-			val = total - scale*log(contrast*contrast*
+			val = total - scale*log1p(contrast*contrast*
 						(c[ind].re*c[ind].re +
-						 c[ind].im*c[ind].im) + 1);
+						 c[ind].im*c[ind].im));
 			img[ind] = val;
 		}
 }
