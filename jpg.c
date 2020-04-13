@@ -46,6 +46,8 @@
 #include "jpeglib.h"
 #include "jpg.h"
 
+#include "jpeg-6b-steg/jmorecfg.h"
+
 void jpeg_dummy_dest (j_compress_ptr cinfo);
 
 /* The functions that can be used to handle a JPEG data object */
