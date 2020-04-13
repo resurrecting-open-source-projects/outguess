@@ -243,7 +243,6 @@ steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 	   u_char *data, u_int datalen, u_int16_t seed, int embed)
 {
 	int i, len;
-	u_int32_t tmp = 0;
 	u_char tmpbuf[4], *encbuf;
 	stegres result;
 
@@ -300,7 +299,7 @@ steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 	while (ITERATOR_CURRENT(iter) < bitmap->bits && datalen > 0) {
 		iterator_adapt(iter, bitmap, datalen);
 
-		tmp = *data++;
+		u_int32_t tmp = *data++;
 		datalen--;
 
 		if (!steg_embedchunk(bitmap, iter, tmp, 8, embed)) {
@@ -410,7 +409,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 	  int siter, int siterstart,
 	  u_char *data, int datalen, int flags)
 {
-	int changed, tch, half, chmax, chmin;
+	int half;
 	int j, i, size = 0;
 	struct arc4_stream tas;
 	iterator titer;
@@ -431,7 +430,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 		}
 
 		fprintf(stderr, "Finding best embedding...\n");
-		changed = chmin = chmax = -1; j = -STEG_ERR_HEADER;
+		int changed = -1, chmin = -1, chmax = -1; j = -STEG_ERR_HEADER;
 
 		for (i = siterstart; i < siter; i++) {
 			titer = *iter;
@@ -448,7 +447,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 			 * Only count bias, if we do not modifiy many
 			 * extra bits for statistical foiling.
 			 */
-			tch = result.changed + result.bias;
+			int tch = result.changed + result.bias;
 
 			if (steg_stat)
 				chstats[i - siterstart] = result.changed;
@@ -1021,7 +1020,7 @@ main(int argc, char **argv)
 
 		if (foil) {
 			int i, count;
-			double mean, dev, sq;
+			double mean, dev;
 			int n;
 			u_char cbit;
 			u_char *pbits = bitmap.bitmap;
@@ -1065,7 +1064,7 @@ main(int argc, char **argv)
 
 			dev = 0;
 			for (i = 0; i < MAX_SEEK; i++) {
-				sq = (i + 1 - mean) * (i + 1 - mean);
+				const double sq = (i + 1 - mean) * (i + 1 - mean);
 				dev += steg_offset[i] * sq;
 			}
 
