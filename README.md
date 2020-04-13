@@ -93,13 +93,44 @@ Niels Provos for OutGuess =< 0.2. The current site for OutGuess is:
 
 ## Installation
 
-OutGuess has been modified to use autoconf, a normal installation
-should require only
+### Prepare the `jpeg-6b-steg` library
+
+To do so, you need to choose (and potentially edit)
+an appropriate *jconfig.h* file.
+
+To get an idea which one you might want,
+have a look at their header comments.
+
+You might do so like this (POSIX only):
+
+```bash
+head -n 1 jpeg-6b-steg/jconfig.*
+```
+
+The default one is `jconfig.cfg`.
+You may use it like this:
+
+```bash
+cd jpeg-6b-steg
+ln -s jconfig.cfg jconfig.h
+cd ..
+```
+
+### Build OutGuess
+
+OutGuess has only been tested on OpenBSD, Linux, Solaris and AIX.
+
+#### Supported Systems
+
+OutGuess has been modified to use autoconf.
+A normal installation should require only:
 
 1. `./configure && make`
 
-There is an optimization bug in `gcc`. you might have to compile
-with `-O0`.
+There is an optimization bug in `gcc`,
+so you might have to compile with `-O0`.
+
+#### Unsupported Systems
 
 If your system is not supported, try building by hand as follows:
 
@@ -113,8 +144,6 @@ If your system is not supported, try building by hand as follows:
    > <https://www.ijg.org/files/>
 
 2. Edit the `Makefile` and type `make`
-
-OutGuess has only been tested on OpenBSD, Linux, Solaris and AIX.
 
 ## BUGS
 
