@@ -461,7 +461,7 @@ steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 			if (changed == -1 || tch < changed) {
 				changed = tch;
 				j = i;
-				fprintf(stderr, "%5u: %5u(%3.1f%%)[%3.1f%%], bias %5d(%1.2f), saved: % 5d, total: %5.2f%%\n",
+				fprintf(stderr, "%5d: %5d(%3.1f%%)[%3.1f%%], bias %5d(%1.2f), saved: % 5d, total: %5.2f%%\n",
 					j, result.changed, 
 					(float) 100 * steg_mis / steg_count,
 					(float) 100 * steg_mis / steg_data,
