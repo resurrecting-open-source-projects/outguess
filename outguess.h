@@ -32,6 +32,7 @@
 #define _OUTGUESS_H
 
 #include "arc.h"
+#include "bitmap.h"
 
 #define BITSHIFT	0	/* which bit in the byte the data is in */
 
@@ -47,27 +48,6 @@
 #define STEG_STATS	0x20
 
 extern int steg_stat;
-
-/*
- * The generic bitmap structure.  An object is passed in and an object
- * dependant function extracts all bits that can be modified to embed
- * data into a bitmap structure.  This allows the embedding be independant
- * of the carrier data.
- */
-
-typedef struct _bitmap {
-	u_char *bitmap;		/* the bitmap */
-	u_char *locked;		/* bits that may not be modified */
-	u_char *metalock;	/* bits that have been used for foil */
-	char *detect;		/* relative detectability of changes */
-	char *data;		/* data associated with the bit */
-	int bytes;		/* allocated bytes */
-	int bits;		/* number of bits in here */
-
-				/* function to call for preserve stats */
-	int (*preserve)(struct _bitmap *, int);
-	size_t maxcorrect;
-} bitmap;
 
 #define STEG_ERR_HEADER		1
 #define STEG_ERR_BODY		2
@@ -93,20 +73,20 @@ typedef struct _config {
 
 void *checkedmalloc(size_t n);
 
-u_char *encode_data(u_char *, int *, struct arc4_stream *, int);
-u_char *decode_data(u_char *, int *, struct arc4_stream *, int);
+char *encode_data(char *data, size_t *len, struct arc4_stream *as, int flags);
+char *decode_data(char *encdata, size_t *len, struct arc4_stream *as, int flags);
 
 struct _iterator;
 
 stegres steg_embed(bitmap *bitmap, struct _iterator *iter,
-		   struct arc4_stream *as, u_char *data, u_int datalen,
-		   u_int16_t seed, int embed);
-u_int32_t steg_retrbyte(bitmap *bitmap, int bits, struct _iterator *iter);
+		   struct arc4_stream *as, char *data, size_t datalen,
+		   uint16_t seed, int embed);
+uint32_t steg_retrbyte(bitmap *bitmap, int bits, struct _iterator *iter);
 
-char *steg_retrieve(int *len, bitmap *bitmap, struct _iterator *iter,
+char *steg_retrieve(size_t *len, bitmap *bitmap, struct _iterator *iter,
 		    struct arc4_stream *as, int);
 
-void mmap_file(char *name, u_char **data, int *size);
-void munmap_file(u_char *data, int len);
+void mmap_file(char *name, char **data, size_t *size);
+void munmap_file(char *data, size_t len);
 
 #endif /* _OUTGUESS_H */

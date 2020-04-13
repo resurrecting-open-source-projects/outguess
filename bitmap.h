@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright (C) 1999-2020 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,32 +28,30 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _BITMAP_H
+#define _BITMAP_H
+
+#include <stddef.h>
+#include <stdint.h>
+
 /*
- * Handling functions for the PNM image format.
+ * The generic bitmap structure.  An object is passed in and an object
+ * dependant function extracts all bits that can be modified to embed
+ * data into a bitmap structure.  This allows the embedding be independant
+ * of the carrier data.
  */
+typedef struct _bitmap {
+	char *bitmap;		/* the bitmap */
+	char *locked;		/* bits that may not be modified */
+	char *metalock;	/* bits that have been used for foil */
+	char *detect;		/* relative detectability of changes */
+	char *data;		/* data associated with the bit */
+	size_t bytes;		/* allocated bytes */
+	size_t bits;		/* number of bits in here */
 
-#ifndef _PNM_H
-#define _PNM_H
+	/* function to call for preserve stats */
+	int (*preserve)(struct _bitmap *, int);
+	size_t maxcorrect;
+} bitmap;
 
-#include <stdio.h>
-#include "bitmap.h"
-#include "image.h"
-
-#define PNM_THRES_MAX	0xf0
-#define PNM_THRES_MIN	0x10
-
-void skip_white(FILE *f);
-
-void init_pnm(char *);
-
-int preserve_pnm(bitmap *, int);
-
-void bitmap_to_pnm(image *img, bitmap *bitmap, int flags);
-void bitmap_from_pnm(bitmap *bitmap, image *image, int flags);
-
-image *read_pnm(FILE *fin);
-void write_pnm(FILE *fout, image *image);
-
-void free_pnm(image *image);
-
-#endif /* _PNM_H */
+#endif /* _BITMAP_H */

@@ -31,14 +31,19 @@
 #ifndef _FOURIER_H
 #define _FOURIER_H
 
-int split_colors(u_char **pred, u_char **pgreen, u_char **pblue,
-		  u_char *img, int xdim, int ydim, int depth);
+#include <stdint.h>
+#include <complex.h>
+#include <fftw3.h>
 
-void fft_visible(int xdim, int ydim, fftw_complex *c, u_char *img,
+int split_colors(uint8_t **pred, uint8_t **pgreen, uint8_t **pblue,
+		  uint8_t *img, int xdim, int ydim, int depth);
+
+void fft_visible(int xdim, int ydim, fftw_complex *c, uint8_t *img,
 		 double maxre, double maxim, double maxmod);
 fftw_complex *fft_transform(int xdim, int ydim, unsigned char *data,
 	       double *mre, double *mim, double *mmod);
 void fft_filter(int xdim, int ydim, fftw_complex *data);
-u_char *fft_transform_back(int xdim, int ydim, fftw_complex *data);
+uint8_t *fft_transform_back(int xdim, int ydim, fftw_complex *data);
+
 #endif
 

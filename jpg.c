@@ -62,7 +62,7 @@ handler jpg_handler = {
 
 static int jpeg_state;
 static bitmap tbitmap;
-static u_int32_t off;
+static uint32_t off;
 static int quality = 75;
 static int jpeg_eval;
 static int eval_cnt;
@@ -300,7 +300,7 @@ steg_use_bit (unsigned short temp)
 		off++;
 
 		if (off >= tbitmap.bits) {
-			u_char *buf;
+			char *buf;
 
 			tbitmap.bytes += 256;
 			tbitmap.bits += 256 * 8;
@@ -443,7 +443,7 @@ compress_JPEG (image *image)
   row_stride = image->x * 3;	/* JSAMPLEs per row in image_buffer */
 
   while (cinfo.next_scanline < cinfo.image_height) {
-    row_pointer[0] = & image->img[cinfo.next_scanline * row_stride];
+    row_pointer[0] = (JSAMPROW) & image->img[cinfo.next_scanline * row_stride];
     (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
   }
 
@@ -541,7 +541,7 @@ write_JPEG_file (FILE *outfile, image *image)
      * Here the array is only one element long, but you could pass
      * more than one scanline at a time if that's more convenient.
      */
-    row_pointer[0] = & image->img[cinfo.next_scanline * row_stride];
+    row_pointer[0] = (JSAMPROW) & image->img[cinfo.next_scanline * row_stride];
     (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
   }
 

@@ -31,6 +31,10 @@
 #ifndef _JPG_H
 #define _JPG_H
 
+#include <stdio.h>
+#include "bitmap.h"
+#include "image.h"
+
 #define JPG_THRES_MAX	0x25
 #define JPG_THRES_LOW	0x04
 #define JPG_THRES_MIN	0x03

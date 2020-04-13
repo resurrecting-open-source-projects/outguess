@@ -18,7 +18,7 @@ usage(void)
 }
 
 void
-histogram_simple(u_char *data, int bits)
+histogram_simple(char *data, int bits)
 {
 	int i;
 	int one = 0, zero = 0;
@@ -37,7 +37,7 @@ histogram_simple(u_char *data, int bits)
 #define MAXRUNLEN	25
 
 void
-histogram_runlen(u_char *data, int bits)
+histogram_runlen(char *data, int bits)
 {
 	int buckets[MAXRUNLEN];
 	int what, count, i;

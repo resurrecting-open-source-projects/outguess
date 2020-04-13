@@ -41,18 +41,21 @@
 #ifndef _ARC_H
 #define _ARC_H
 
+#include <stddef.h>
+#include <stdint.h>
+
 struct arc4_stream {
-	u_int8_t i;
-	u_int8_t j;
-	u_int8_t s[256];
+	uint8_t i;
+	uint8_t j;
+	uint8_t s[256];
 };
 
 /* Key stream */
 
 void arc4_init(struct arc4_stream *as);
-u_int8_t arc4_getbyte(struct arc4_stream *as);
-u_int32_t arc4_getword(struct arc4_stream *as);
-void arc4_addrandom(struct arc4_stream *as, u_char *dat, int datlen);
-void arc4_initkey(struct arc4_stream *as, char *type, u_char *key, int keylen);
+uint8_t arc4_getbyte(struct arc4_stream *as);
+uint32_t arc4_getword(struct arc4_stream *as);
+void arc4_addrandom(struct arc4_stream *as, uint8_t *dat, size_t datlen);
+void arc4_initkey(struct arc4_stream *as, char *type, char *key, size_t keylen);
 
 #endif /* _ARC_H */

@@ -31,6 +31,10 @@
 #ifndef _ITERATOR_H
 #define _ITERATOR_H
 
+#include <stdint.h>
+#include <stddef.h>
+#include "arc.h"
+
 #define INIT_SKIPMOD	32
 #define DEFAULT_ITER	256
 
@@ -40,21 +44,20 @@
 /*
  * The generic iterator
  */
-
 typedef struct _iterator {
 	struct arc4_stream as;
-	u_int32_t skipmod;
+	uint32_t skipmod;
 	int off;		/* Current bit position */
 } iterator;
 
 struct _bitmap;
 
-void iterator_init(iterator *, struct _bitmap *,  u_char *key, u_int klen);
+void iterator_init(iterator *, struct _bitmap *, char *key, size_t klen);
 int iterator_next(iterator *, struct _bitmap *);
 
 #define ITERATOR_CURRENT(x)	(x)->off
 
-void iterator_seed(iterator *, struct _bitmap *, u_int16_t);
-void iterator_adapt(iterator *, struct _bitmap *, int);
+void iterator_seed(iterator *, struct _bitmap *, uint16_t);
+void iterator_adapt(iterator *, struct _bitmap *, size_t);
 
-#endif
+#endif /* _ITERATOR_H */

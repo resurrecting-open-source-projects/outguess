@@ -43,7 +43,7 @@
 #include <sys/types.h>
 
 #include "config.h"
-#include <md5.h>
+#include "missing/md5.h"
 
 #include "arc.h"
 
@@ -63,10 +63,10 @@ arc4_init(struct arc4_stream *as)
 	as->j = 0;
 }
 
-u_int8_t
+uint8_t
 arc4_getbyte(struct arc4_stream *as)
 {
-	u_int8_t si, sj;
+	uint8_t si, sj;
 
 	as->i = (as->i + 1);
 	si = as->s[as->i];
@@ -77,11 +77,11 @@ arc4_getbyte(struct arc4_stream *as)
 	return (as->s[(si + sj) & 0xff]);
 }
 
-u_int32_t
+uint32_t
 arc4_getword(as)
 	struct arc4_stream *as;
 {
-	u_int32_t val;
+	uint32_t val;
 	val = arc4_getbyte(as) << 24;
 	val |= arc4_getbyte(as) << 16;
 	val |= arc4_getbyte(as) << 8;
@@ -90,10 +90,10 @@ arc4_getword(as)
 }
 
 void
-arc4_addrandom(struct arc4_stream *as, u_char *dat, int datlen)
+arc4_addrandom(struct arc4_stream *as, uint8_t *dat, size_t datlen)
 {
         int     n;
-        u_int8_t si;
+        uint8_t si;
 
         as->i--;
         for (n = 0; n < 256; n++) {
@@ -106,15 +106,15 @@ arc4_addrandom(struct arc4_stream *as, u_char *dat, int datlen)
 }
 
 void
-arc4_initkey(struct arc4_stream *as, char *type, u_char *key, int keylen)
+arc4_initkey(struct arc4_stream *as, char *type, char *key, size_t keylen)
 {
   MD5_CTX ctx;
-  u_char digest[16];
+  uint8_t digest[16];
 
   /* Bah, we want bcrypt */
   MD5Init(&ctx);
-  MD5Update(&ctx, type, strlen(type));
-  MD5Update(&ctx, key, keylen);
+  MD5Update(&ctx, (unsigned char*) type, strlen(type));
+  MD5Update(&ctx, (unsigned char*) key, keylen);
   MD5Final(digest, &ctx);
 
   arc4_init(as);

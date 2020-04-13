@@ -1,4 +1,8 @@
 /* Golay 3-bit error correction */
+
+#ifndef _GOLAY_H
+#define _GOLAY_H
+
 extern long encoding_table[4096];
 extern long decoding_table[2048];
 
@@ -16,3 +20,5 @@ long get_syndrome(long pattern);
 #define DATABITS	12
 #define CODEBITS	23
 #define ERRORBITS	3
+
+#endif /* _GOLAY_H */

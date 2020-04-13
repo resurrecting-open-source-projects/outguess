@@ -36,10 +36,9 @@
 #include "arc.h"
 #include "iterator.h"
 
-/* Initalize the iterator */
-
+/** Initalize the iterator */
 void
-iterator_init(iterator *iter, bitmap *bitmap, u_char *key, u_int klen)
+iterator_init(iterator *iter, bitmap *bitmap, char *key, size_t klen)
 {
 	iter->skipmod = INIT_SKIPMOD;
 
@@ -48,8 +47,7 @@ iterator_init(iterator *iter, bitmap *bitmap, u_char *key, u_int klen)
 	iter->off = arc4_getword(&iter->as) % iter->skipmod;
 }
 
-/* The next bit in the bitmap we should embed data into */
-
+/** The next bit in the bitmap we should embed data into */
 int
 iterator_next(iterator *iter, bitmap *bitmap)
 {
@@ -59,9 +57,9 @@ iterator_next(iterator *iter, bitmap *bitmap)
 }
 
 void
-iterator_seed(iterator *iter, bitmap *bitmap, u_int16_t seed)
+iterator_seed(iterator *iter, bitmap *bitmap, uint16_t seed)
 {
-	u_int8_t reseed[2];
+	uint8_t reseed[2];
 
 	reseed[0] = seed;
 	reseed[1] = seed >> 8;
@@ -70,7 +68,7 @@ iterator_seed(iterator *iter, bitmap *bitmap, u_int16_t seed)
 }
 
 void
-iterator_adapt(iterator *iter, bitmap *bitmap, int datalen)
+iterator_adapt(iterator *iter, bitmap *bitmap, size_t datalen)
 {
 	iter->skipmod = SKIPADJ(bitmap->bits, bitmap->bits - iter->off) *
 		(bitmap->bits - iter->off)/(8 * datalen);

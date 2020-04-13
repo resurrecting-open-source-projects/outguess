@@ -92,9 +92,9 @@ skip_white(FILE *f)
 void
 bitmap_to_pnm(image *image, bitmap *bitmap, int flags)
 {
-	int i, j, off;
-	u_char tmp;
-	u_char *img = image->img;
+	size_t i, j, off;
+	uint8_t tmp;
+	uint8_t *img = image->img;
 
 	off = 0;
 	for (i = 0; i < bitmap->bits; ) {
@@ -113,9 +113,9 @@ bitmap_to_pnm(image *image, bitmap *bitmap, int flags)
 void
 bitmap_from_pnm(bitmap *bitmap, image *image, int flags)
 {
-	int i, j, off;
-	u_char tmp;
-	u_char *img;
+	size_t i, j, off;
+	uint8_t tmp;
+	uint8_t *img;
 	int x, y, depth;
 
 	img = image->img;
@@ -239,7 +239,7 @@ write_pnm(FILE *fout, image *image)
 	fprintf(fout, "P%d\n%d %d\n%d\n", image->depth == 1 ? 5 : 6,
 		image->x, image->y, image->max);
 
-	fwrite(image->img, image->x*image->y*image->depth, sizeof(u_char),
+	fwrite(image->img, image->x*image->y*image->depth, sizeof(uint8_t),
 	       fout);
 }
 

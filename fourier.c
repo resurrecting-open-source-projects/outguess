@@ -33,12 +33,12 @@
 
 /* if depth > 1 */
 int
-split_colors(u_char **pred, u_char **pgreen, u_char **pblue,
-	     u_char *img,
+split_colors(uint8_t **pred, uint8_t **pgreen, uint8_t **pblue,
+	     uint8_t *img,
 	     int xdim, int ydim, int depth)
 {
 	int i, j;
-	u_char *red, *green, *blue;
+	uint8_t *red, *green, *blue;
 
 	/* Split to red - blue */
 	red = checkedmalloc(ydim*xdim);
@@ -61,10 +61,10 @@ split_colors(u_char **pred, u_char **pgreen, u_char **pblue,
 }
 
 void
-fft_image(int xdim, int ydim, int depth, u_char *img)
+fft_image(int xdim, int ydim, int depth, uint8_t *img)
 {
 	int i,j;
-	u_char *red, *green, *blue;
+	uint8_t *red, *green, *blue;
 	fftw_complex *c, *d, *e;
 	double maxre, maxim, maxmod;
 
@@ -93,7 +93,7 @@ fft_image(int xdim, int ydim, int depth, u_char *img)
 }
 
 void
-fft_visible(int xdim, int ydim, fftw_complex *c, u_char *img,
+fft_visible(int xdim, int ydim, fftw_complex *c, uint8_t *img,
 	    double maxre, double maxim, double maxmod)
 {
 	int i, j, ind;
@@ -193,17 +193,17 @@ fft_filter(int xdim, int ydim, fftw_complex *data)
 	}
 }
 
-u_char *
+uint8_t *
 fft_transform_back(int xdim, int ydim, fftw_complex *data)
 {
 	rfftwnd_plan p;
 	int i,j, ind;
 	fftw_real dj, val;
-	u_char *a;
+	uint8_t *a;
 
 	fprintf(stderr, "Starting complex 2d FFT-back\n");
 
-	a = checkedmalloc(xdim * ydim * sizeof(u_char));
+	a = checkedmalloc(xdim * ydim * sizeof(uint8_t));
 
 	p = fftw2d_create_plan(ydim, xdim, FFTW_BACKWARD,
 			       FFTW_ESTIMATE | FFTW_IN_PLACE);

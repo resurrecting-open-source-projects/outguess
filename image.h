@@ -1,5 +1,5 @@
 /*
- * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright 1999-2020 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,32 +28,33 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * Handling functions for the PNM image format.
- */
-
-#ifndef _PNM_H
-#define _PNM_H
+#ifndef _IMAGE_H
+#define _IMAGE_H
 
 #include <stdio.h>
 #include "bitmap.h"
-#include "image.h"
 
-#define PNM_THRES_MAX	0xf0
-#define PNM_THRES_MIN	0x10
+/*
+ * This is our raw data object, also used to create JPG or other
+ * encoded output.
+ */
+typedef struct _image {
+	int x, y, depth, max;
+	uint8_t *img;
+	bitmap *bitmap;
+	int flags;
+} image;
 
-void skip_white(FILE *f);
+typedef struct _handler {
+	char *extension;				/* Extension name */
+	void (*init)(char *);
+	image *(*read)(FILE *);
+	void (*write)(FILE *, image *);
+	void (*get_bitmap)(bitmap *, image *, int);
+	void (*put_bitmap)(image *, bitmap *, int);
+	int (*preserve)(bitmap *, int);
+} handler;
 
-void init_pnm(char *);
+extern handler pnm_handler;
 
-int preserve_pnm(bitmap *, int);
-
-void bitmap_to_pnm(image *img, bitmap *bitmap, int flags);
-void bitmap_from_pnm(bitmap *bitmap, image *image, int flags);
-
-image *read_pnm(FILE *fin);
-void write_pnm(FILE *fout, image *image);
-
-void free_pnm(image *image);
-
-#endif /* _PNM_H */
+#endif /* _IMAGE_H */
