@@ -152,7 +152,6 @@ int
 preserve_jpg(bitmap *bitmap, int off)
 {
 	char coeff;
-	int i, a, b;
 	char *data = bitmap->data;
 
 	if (off == -1) {
@@ -169,12 +168,12 @@ preserve_jpg(bitmap *bitmap, int off)
 		dctpending = 0;
 
 		/* Calculate coefficent frequencies */
-		for (i = 0; i < bitmap->bits; i++) {
+		for (int i = 0; i < bitmap->bits; i++) {
 			dctfreq[data[i] + 127]++;
 		}
 
-		a = dctfreq[-1 + 127];
-		b = dctfreq[-2 + 127];
+		int a = dctfreq[-1 + 127];
+		int b = dctfreq[-2 + 127];
 
 		if (a < b) {
 			fprintf(stderr, "Can not calculate estimate\n");
@@ -183,7 +182,7 @@ preserve_jpg(bitmap *bitmap, int off)
 			res = 2*bitmap->bits*b/(a + b);
 
 		/* Pending threshold based on frequencies */
-		for (i = 0; i < DCTENTRIES; i++) {
+		for (int i = 0; i < DCTENTRIES; i++) {
 			dctfreq[i] = dctfreq[i] /
 				((float)bitmap->bits / DCTFREQRANGE);
 			dctfreq[i] /= DCTFREQREDUCE;
@@ -199,7 +198,7 @@ preserve_jpg(bitmap *bitmap, int off)
 		return (res);
 	} else if (off >= bitmap->bits) {
 		/* Reached end of image */
-		for (i = 0; i < DCTENTRIES; i++) {
+		for (int i = 0; i < DCTENTRIES; i++) {
 			while (dctadjust[i]) {
 				dctadjust[i]--;
 
@@ -232,7 +231,7 @@ preserve_jpg(bitmap *bitmap, int off)
 		return (0);
 	}
 
-	i = preserve_single(bitmap, off, coeff);
+	const int i = preserve_single(bitmap, off, coeff);
 
 	if (i != -1) {
 		steg_foil++;
