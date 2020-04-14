@@ -225,7 +225,11 @@ read_pnm(FILE *fin)
 	case '3': /* PPM ASCII */
 		for (size_t i = 0; i < image->x * image->y * image->depth; i++) {
 			skip_white(fin);
-			fscanf(fin, "%d", &v);
+			nScanned = fscanf(fin, "%d", &v);
+			if (nScanned != 1) {
+				fprintf(stderr, "Failed to read image pixel value!\n");
+				exit(1);
+			}
 			if (v < 0 || v > image->max) {
 				fprintf(stderr, "Out of range value %d!\n", v);
 				exit(1);
