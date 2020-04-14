@@ -27,4 +27,4 @@ jobs:
            sudo make install
     - name: run_program
       run: |
-           outguess
+           outguess -h
