@@ -36,9 +36,9 @@
 #include <stdint.h>
 
 /*
- * The generic bitmap structure.  An object is passed in and an object
+ * The generic bitmap structure.An object is passed in and an object
  * dependant function extracts all bits that can be modified to embed
- * data into a bitmap structure.  This allows the embedding be independant
+ * data into a bitmap structure. This allows the embedding be independant
  * of the carrier data.
  */
 typedef struct _bitmap {

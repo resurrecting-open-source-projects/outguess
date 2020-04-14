@@ -67,8 +67,8 @@ init_pnm(char *parameter)
 int
 preserve_pnm(bitmap *bitmap, int off)
 {
-    if (off == -1)
-	    bitmap->preserve = preserve_pnm;
+	if (off == -1)
+		bitmap->preserve = preserve_pnm;
 
 	return (-1);
 }
@@ -178,7 +178,8 @@ read_pnm(FILE *fin)
 	fscanf(fin, "%d", &image->max);
 	getc(fin);
 	if (image->max > 255 || image->max <= 0 || image->x <= 1 ||
-	    image->y <= 1) {
+			image->y <= 1)
+	{
 		fprintf(stderr, "Unsupported value range!\n");
 		exit(1);
 	}
@@ -198,8 +199,8 @@ read_pnm(FILE *fin)
 	}
 
 	image->img = (unsigned char *) checkedmalloc(sizeof(unsigned char) *
-						     image->x * image->y *
-						     image->depth);
+			image->x * image->y *
+			image->depth);
 
 	switch (magic[1]) {
 	case '2': /* PGM ASCII */
@@ -239,7 +240,7 @@ write_pnm(FILE *fout, image *image)
 		image->x, image->y, image->max);
 
 	fwrite(image->img, image->x*image->y*image->depth, sizeof(uint8_t),
-	       fout);
+			fout);
 }
 
 void

@@ -130,10 +130,9 @@ checkedmalloc(size_t n)
 
 /*
  * The error correction might allow us to introduce extra errors to
- * avoid modifying data.  Choose to leave bits with high detectability
+ * avoid modifying data. Choose to leave bits with high detectability
  * untouched.
  */
-
 void
 steg_adjust_errors(bitmap *bitmap, int flags)
 {
@@ -229,7 +228,7 @@ steg_embedchunk(bitmap *bitmap, iterator *iter,
 
 		if (val != 2 && (embed & STEG_EMBED)) {
 			WRITE_BIT(plocked, i, 1);
-      			WRITE_BIT(pbits, i, data & 1);
+			WRITE_BIT(pbits, i, data & 1);
 		}
 
 		data >>= 1;
@@ -243,7 +242,7 @@ steg_embedchunk(bitmap *bitmap, iterator *iter,
 
 stegres
 steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
-	   char *data, size_t datalen, uint16_t seed, int embed)
+		char *data, size_t datalen, uint16_t seed, int embed)
 {
 	size_t i, len;
 	char tmpbuf[4], *encbuf;
@@ -286,7 +285,7 @@ steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 			 * was locked, we can go on, otherwise we have to fail.
 			 */
 			if ((embed & STEG_ERROR) ||
-			    steg_count < 16 /* XXX */)
+					steg_count < 16 /* XXX */)
 				result.error = STEG_ERR_HEADER;
 			else
 				result.error = STEG_ERR_PERM;
@@ -313,7 +312,7 @@ steg_embed(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
 
 	/* Final error adjustion after end */
 	if ((embed & STEG_ERROR) && steg_err_cnt > 0)
-	  steg_adjust_errors(bitmap, embed);
+		steg_adjust_errors(bitmap, embed);
 
 	if (embed & STEG_EMBED) {
 		fprintf(stderr, "Bits embedded: %d, "
@@ -351,7 +350,7 @@ steg_retrbyte(bitmap *bitmap, int bits, iterator *iter)
 
 char *
 steg_retrieve(size_t *len, bitmap *bitmap, iterator *iter, struct arc4_stream *as,
-	      int flags)
+		int flags)
 {
 	uint32_t n;
 	int i;
@@ -408,8 +407,8 @@ steg_retrieve(size_t *len, bitmap *bitmap, iterator *iter, struct arc4_stream *a
 
 int
 steg_find(bitmap *bitmap, iterator *iter, struct arc4_stream *as,
-	  int siter, int siterstart,
-	  char *data, int datalen, int flags)
+		int siter, int siterstart,
+		char *data, int datalen, int flags)
 {
 	int half;
 	int j;
@@ -687,7 +686,7 @@ do_embed(bitmap *bitmap, char *filename, char *key, size_t klen,
 	int j;
 
 	/* Initialize random data stream */
-	arc4_initkey(&as,  "Encryption", key, klen);
+	arc4_initkey(&as, "Encryption", key, klen);
 	tas = as;
 
 	iterator_init(&iter, bitmap, key, klen);
@@ -716,14 +715,14 @@ do_embed(bitmap *bitmap, char *filename, char *key, size_t klen,
 	munmap_file(data, datalen);
 
 	j = steg_find(bitmap, &iter, &as, cfg->siter, cfg->siterstart,
-		      encdata, enclen, cfg->flags);
+			encdata, enclen, cfg->flags);
 	if (j < 0) {
 		fprintf(stderr, "Failed to find embedding.\n");
 		goto out;
 	}
 
 	*result = steg_embed(bitmap, &iter, &as, encdata, enclen, j,
-			    cfg->flags | STEG_EMBED);
+			cfg->flags | STEG_EMBED);
 
  out:
 	free(encdata);
@@ -830,10 +829,10 @@ main(int argc, char **argv)
 	memset(&cfg1, 0, sizeof(cfg1));
 	memset(&cfg2, 0, sizeof(cfg2));
 
-        if (strchr(argv[0], '/'))
-                cp = strrchr(argv[0], '/') + 1;
-        else
-                cp = argv[0];
+	if (strchr(argv[0], '/'))
+		cp = strrchr(argv[0], '/') + 1;
+	else
+		cp = argv[0];
 	if (!strcmp("outguess-extract", cp)) {
 		extractonly = 1;
 		doretrieve = 1;
@@ -909,8 +908,9 @@ main(int argc, char **argv)
 
  aftergetop:
 	if ((argc != 2 && argc != 0) ||
-	    (extractonly && argc != 2) ||
-	    (!doretrieve && !extractonly && data == NULL)) {
+			(extractonly && argc != 2) ||
+			(!doretrieve && !extractonly && data == NULL))
+	{
 		fprintf(stderr, usage, version, progname);
 		exit(1);
 	}
@@ -1018,8 +1018,8 @@ main(int argc, char **argv)
 					derivekey[strlen(key2)] = '\0';
 
 				j = do_embed(&bitmap, data2,
-					     derivekey, strlen(derivekey),
-					     &cfg2, &tmpres);
+						derivekey, strlen(derivekey),
+						&cfg2, &tmpres);
 			}
 
 			if (j < 0) {
@@ -1097,14 +1097,14 @@ main(int argc, char **argv)
 #ifdef FOURIER
 		if (dofourier)
 			fft_image(image->x, image->y, image->depth,
-				  image->img);
+					image->img);
 #endif /* FOURIER */
 
 		fprintf(stderr, "Writing %s....\n", argv[1]);
 		dsth->write(fout, image);
 	} else {
 		/* Initialize random data stream */
-		arc4_initkey(&as,  "Encryption", key, strlen(key));
+		arc4_initkey(&as, "Encryption", key, strlen(key));
 		tas = as;
 
 		iterator_init(&iter, &bitmap, key, strlen(key));

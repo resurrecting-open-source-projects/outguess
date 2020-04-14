@@ -35,8 +35,8 @@
 /* if depth > 1 */
 int
 split_colors(uint8_t **pred, uint8_t **pgreen, uint8_t **pblue,
-	     uint8_t *img,
-	     int xdim, int ydim, int depth)
+		uint8_t *img,
+		int xdim, int ydim, int depth)
 {
 	int i, j;
 	uint8_t *red, *green, *blue;
@@ -95,7 +95,7 @@ fft_image(int xdim, int ydim, int depth, uint8_t *img)
 
 void
 fft_visible(int xdim, int ydim, fftw_complex *c, uint8_t *img,
-	    double maxre, double maxim, double maxmod)
+		double maxre, double maxim, double maxmod)
 {
 	int i, j, ind;
 	double contrast, scale, factor, total, val;
@@ -106,7 +106,7 @@ fft_visible(int xdim, int ydim, fftw_complex *c, uint8_t *img,
 	scale = factor / log1p(maxmod * contrast * contrast);
 
 	printf("Visible: max (%f/%f/%f), contrast: %f, scale: %f\n",
-	       maxre, maxim, maxmod, contrast, scale);
+			maxre, maxim, maxmod, contrast, scale);
 
 	for (i = 0; i < xdim ; i++)
 		for (j = 0; j < ydim; j++) {
@@ -120,7 +120,7 @@ fft_visible(int xdim, int ydim, fftw_complex *c, uint8_t *img,
 
 fftw_complex *
 fft_transform(int xdim, int ydim, unsigned char *data,
-	       double *mre, double *mim, double *mmod)
+		double *mre, double *mim, double *mmod)
 {
 	rfftwnd_plan p;
 	int i,j, ind, di;
@@ -132,7 +132,7 @@ fft_transform(int xdim, int ydim, unsigned char *data,
 	a = checkedmalloc(xdim * ydim * sizeof(fftw_complex));
 
 	p = fftw2d_create_plan(ydim, xdim, FFTW_FORWARD,
-			       FFTW_ESTIMATE | FFTW_IN_PLACE);
+			FFTW_ESTIMATE | FFTW_IN_PLACE);
 
 	di = 1;
 	for (j = 0; j < ydim; j++) {
@@ -182,7 +182,7 @@ fft_filter(int xdim, int ydim, fftw_complex *data)
 		for (i = 0; i < xdim ; i++) {
 			ind = i + j * xdim;
 			val = sqrt((xdim/2-i)*(xdim/2-i) +
-				   (ydim/2-j)*(ydim/2-j));
+					(ydim/2-j)*(ydim/2-j));
 			if (val > 15) {
 				data[ind].re = 2*data[ind].re;
 				data[ind].im = 2*data[ind].im;
@@ -207,7 +207,7 @@ fft_transform_back(int xdim, int ydim, fftw_complex *data)
 	a = checkedmalloc(xdim * ydim * sizeof(uint8_t));
 
 	p = fftw2d_create_plan(ydim, xdim, FFTW_BACKWARD,
-			       FFTW_ESTIMATE | FFTW_IN_PLACE);
+			FFTW_ESTIMATE | FFTW_IN_PLACE);
 
 	fftwnd_one(p, data, NULL);
 
@@ -216,7 +216,7 @@ fft_transform_back(int xdim, int ydim, fftw_complex *data)
 		for (i = 0; i < xdim ; i++) {
 			ind = i + j * xdim;
 			val = sqrt(data[ind].re * data[ind].re +
-				   data[ind].im * data[ind].im)/dj;
+					data[ind].im * data[ind].im)/dj;
 			a[ind] = val;
 		}
 	}

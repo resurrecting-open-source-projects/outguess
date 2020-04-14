@@ -35,9 +35,9 @@
 #include "arc.h"
 #include "bitmap.h"
 
-#define BITSHIFT	0	/* which bit in the byte the data is in */
+#define BITSHIFT	0		/* which bit in the byte the data is in */
 
-#define MAX_DEPTH 3             /* maximum number of bytes per pixel */
+#define MAX_DEPTH 3			/* maximum number of bytes per pixel */
 #define MAX_SEEK	1024	/* maximum number of pixels for foil stats */
 
 #define STEG_EMBED	0x01
@@ -80,12 +80,12 @@ char *decode_data(char *encdata, size_t *len, struct arc4_stream *as, int flags)
 struct _iterator;
 
 stegres steg_embed(bitmap *bitmap, struct _iterator *iter,
-		   struct arc4_stream *as, char *data, size_t datalen,
-		   uint16_t seed, int embed);
+		struct arc4_stream *as, char *data, size_t datalen,
+		uint16_t seed, int embed);
 uint32_t steg_retrbyte(bitmap *bitmap, int bits, struct _iterator *iter);
 
 char *steg_retrieve(size_t *len, bitmap *bitmap, struct _iterator *iter,
-		    struct arc4_stream *as, int);
+		struct arc4_stream *as, int);
 
 void mmap_file(char *name, char **data, size_t *size);
 void munmap_file(char *data, size_t len);

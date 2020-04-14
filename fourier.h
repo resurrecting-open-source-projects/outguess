@@ -37,14 +37,13 @@
 #include <fftw3.h>
 
 int split_colors(uint8_t **pred, uint8_t **pgreen, uint8_t **pblue,
-		  uint8_t *img, int xdim, int ydim, int depth);
+		uint8_t *img, int xdim, int ydim, int depth);
 
 void fft_visible(int xdim, int ydim, fftw_complex *c, uint8_t *img,
 		 double maxre, double maxim, double maxmod);
 fftw_complex *fft_transform(int xdim, int ydim, unsigned char *data,
-	       double *mre, double *mim, double *mmod);
+		double *mre, double *mim, double *mmod);
 void fft_filter(int xdim, int ydim, fftw_complex *data);
 uint8_t *fft_transform_back(int xdim, int ydim, fftw_complex *data);
 
-#endif
-
+#endif /* _FOURIER_H */
