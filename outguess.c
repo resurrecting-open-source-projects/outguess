@@ -783,6 +783,7 @@ main(int argc, char **argv)
 {
 	char version[] = "OutGuess 0.2.1 Universal Stego (C) 1999-2018 Niels Provos and others";
 	char usage[] = "%s\n\n%s [options] [<input file> [<output file>]]\n"
+		"\t-h           print this usage help text and exit\n"
 		"\t-[sS] <n>    iteration start, capital letter for 2nd dataset\n"
 		"\t-[iI] <n>    iteration limit\n"
 		"\t-[kK] <key>  key\n"
@@ -842,8 +843,11 @@ main(int argc, char **argv)
 	}
 
 	/* read command line arguments */
-	while ((ch = getopt(argc, argv, "eErmftp:s:S:i:I:k:d:D:K:x:F:")) != -1)
+	while ((ch = getopt(argc, argv, "heErmftp:s:S:i:I:k:d:D:K:x:F:")) != -1)
 		switch((char)ch) {
+		case 'h':
+			fprintf(stderr, usage, version, argv[0]);
+			exit(0);
 		case 'F':
 			if (optarg[0] == '-')
 				foil = 0;
