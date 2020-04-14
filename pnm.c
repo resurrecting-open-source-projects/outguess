@@ -165,17 +165,35 @@ read_pnm(FILE *fin)
 	image = checkedmalloc(sizeof(*image));
 	memset(image, 0, sizeof(*image));
 
-	fgets(magic, 10, fin);
+	const char* const getsRet = fgets(magic, 10, fin);
+	if (getsRet == NULL) {
+		fprintf(stderr, "Failed to read the magic value of the image!\n");
+		fprintf(stderr, "This suggest either an I/O error, ");
+		fprintf(stderr, "or that the file is invalid.\n");
+		exit(1);
+	}
 	if (magic[0] != 'P' || !isdigit(magic[1]) || magic[2] != '\n') {
 		fprintf(stderr, "Unsupported input file type!\n");
 		exit(1);
 	}
 	skip_white(fin);
-	fscanf(fin, "%d", &image->x);
+	int nScanned = fscanf(fin, "%d", &image->x);
+	if (nScanned != 1) {
+		fprintf(stderr, "Failed to read image width!\n");
+		exit(1);
+	}
 	skip_white(fin);
-	fscanf(fin, "%d", &image->y);
+	nScanned = fscanf(fin, "%d", &image->y);
+	if (nScanned != 1) {
+		fprintf(stderr, "Failed to read image height!\n");
+		exit(1);
+	}
 	skip_white(fin);
-	fscanf(fin, "%d", &image->max);
+	nScanned = fscanf(fin, "%d", &image->max);
+	if (nScanned != 1) {
+		fprintf(stderr, "Failed to read image max pixel value!\n");
+		exit(1);
+	}
 	getc(fin);
 	if (image->max > 255 || image->max <= 0 || image->x <= 1 ||
 			image->y <= 1)
@@ -217,7 +235,14 @@ read_pnm(FILE *fin)
 		break;
 	case '5': /* PGM binary */
 	case '6': /* PPM binary */
-		fread(image->img, image->x * image->depth, image->y, fin);
+		if (fread(image->img, image->x * image->depth, image->y, fin)
+				!= image->y)
+		{
+			fprintf(stderr, "Failed to read PPM image data!\n");
+			fprintf(stderr, "This suggest either an I/O error, ");
+			fprintf(stderr, "or that the file is invalid.\n");
+			exit(1);
+		}
 		break;
 	}
 
