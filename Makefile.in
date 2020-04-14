@@ -54,7 +54,7 @@ install: all
 	$(INSTALL_DATA) outguess.1 $(install_prefix)$(mandir)
 
 clean:
-	rm -f outguess extract histogram histogram.o */*.a *~ $(OBJ) $(MISSING)
+	rm -f outguess extract histogram histogram.o */*.a */*.o *~ $(OBJ) $(MISSING)
 
 distclean: clean
 	cd $(JPEGDIR); $(MAKE) $@
