@@ -15,6 +15,7 @@ CC		= @CC@
 CFLAGS		= @CFLAGS@ $(JPEGINCS)
 LDFLAGS		= @LDFLAGS@
 LIBS		= $(JPEGLIBS) -lm
+RM              = rm
 
 INSTALL		= @INSTALL@
 INSTALL_PROG	= @INSTALL_PROGRAM@
@@ -52,6 +53,10 @@ $(JPEGDEP):
 install: all
 	$(INSTALL_PROG) -m 755 outguess $(install_prefix)$(bindir)
 	$(INSTALL_DATA) outguess.1 $(install_prefix)$(mandir)
+
+uninstall:
+	$(RM) -f $(install_prefix)$(bindir)/outguess
+	$(RM) -f $(install_prefix)$(mandir)/outguess.1
 
 clean:
 	rm -f outguess extract histogram histogram.o */*.a */*.o *~ $(OBJ) $(MISSING)
