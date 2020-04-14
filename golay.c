@@ -1,4 +1,8 @@
-/* File:    golay23.c
+/*
+ * Copyright (C) 1994, Robert Morelos-Zaragoza
+ * All rights reserved.
+ *
+ * File:    golay23.c
  * Title:   Encoder/decoder for a binary (23,12,7) Golay code
  * Author:  Robert Morelos-Zaragoza (robert@spectra.eng.hawaii.edu)
  * Date:    August 1994
@@ -42,8 +46,6 @@
  * also implement this program for commercial purposes, provided that you
  * obtain my written permission. Any modification of this program is covered
  * by this copyright.
- *
- * ==   Copyright (c) 1994  Robert Morelos-Zaragoza. All rights reserved.   ==
  */
 
 /* 12-bit of data gets encoded into 23-bit of something. */

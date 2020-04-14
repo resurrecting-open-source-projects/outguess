@@ -1,10 +1,12 @@
 /*
  * Outguess - a Universal Steganograpy Tool for
  *
- * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
- * Copyright 2002      Samuele Giovanni Tonon <samu@debian.org>
- * Copyright 2016      Joao Eriberto Mota Filho <eriberto@debian.org>
- * Copyright 2017      Chris Rorvick <chris@rorvick.com>
+ * Authors:
+ * Copyright (C) 1999-2001, Niels Provos <provos@citi.umich.edu>
+ * Copyright (C) 2002, Samuele Giovanni Tonon <samu@debian.org>
+ * Copyright (C) 2016, Joao Eriberto Mota Filho <eriberto@debian.org>
+ * Copyright (C) 2017, Chris Rorvick <chris@rorvick.com>
+ *
  * Features
  * - preserves frequency count based statistics
  * - multiple data embedding
@@ -14,7 +16,7 @@
  */
 
 /*
- * Copyright (c) 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright (C) 1999-2001, Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

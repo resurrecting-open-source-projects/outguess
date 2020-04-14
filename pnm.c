@@ -1,7 +1,7 @@
 /*
- * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
- * Copyright 2016      Chris Rorvick <chris@rorvick.com>
- * Copyright 2016      Joao Eriberto Mota Filho <eriberto@debian.org>
+ * Copyright (C) 1999-2001, Niels Provos <provos@citi.umich.edu>
+ * Copyright (C) 2016, Chris Rorvick <chris@rorvick.com>
+ * Copyright (C) 2016, Joao Eriberto Mota Filho <eriberto@debian.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
