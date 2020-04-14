@@ -228,7 +228,7 @@ read_pnm(FILE *fin)
 			skip_white(fin);
 			fscanf(fin, "%d", &v);
 			if (v < 0 || v > image->max) {
-				fprintf(stderr, "Out of range value!\n");
+				fprintf(stderr, "Out of range value %d!\n", v);
 				exit(1);
 			}
 			(image->img)[i] = v;
