@@ -1,13 +1,13 @@
-/* See md5.c for explanation and copyright information.  */
+/* See md5.c for explanation and copyright information. */
 
 #ifndef MD5_H
 #define MD5_H
 
 /* Unlike previous versions of this code, uint32 need not be exactly
-   32 bits, merely 32 bits or more.  Choosing a data type which is 32
+   32 bits, merely 32 bits or more. Choosing a data type which is 32
    bits instead of 64 is not important; speed is considerably more
-   important.  ANSI guarantees that "unsigned long" will be big enough,
-   and always using it seems to have few disadvantages.  */
+   important. ANSI guarantees that "unsigned long" will be big enough,
+   and always using it seems to have few disadvantages. */
 typedef unsigned long uint32;
 
 struct MD5Context {

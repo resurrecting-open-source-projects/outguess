@@ -1,6 +1,6 @@
 /*
  * This code implements the MD5 message-digest algorithm.
- * The algorithm is due to Ron Rivest.  This code was
+ * The algorithm is due to Ron Rivest. This code was
  * written by Colin Plumb in 1993, no copyright is claimed.
  * This code is in the public domain; do with it what you wish.
  *
@@ -16,12 +16,12 @@
  */
 
 /* This code was modified in 1997 by Jim Kingdon of Cyclic Software to
-   not require an integer type which is exactly 32 bits.  This work
+   not require an integer type which is exactly 32 bits. This work
    draws on the changes for the same purpose by Tatu Ylonen
    <ylo@cs.hut.fi> as part of SSH, but since I didn't actually use
-   that code, there is no copyright issue.  I hereby disclaim
+   that code, there is no copyright issue. I hereby disclaim
    copyright in any changes I have made; this code remains in the
-   public domain.  */
+   public domain. */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -30,15 +30,15 @@
 #include "md5.h"
 #include <string.h>
 
-/* Little-endian byte-swapping routines.  Note that these do not
+/* Little-endian byte-swapping routines. Note that these do not
    depend on the size of datatypes such as uint32, nor do they require
-   us to detect the endianness of the machine we are running on.  It
+   us to detect the endianness of the machine we are running on. It
    is possible they should be macros for speed, but I would be
-   surprised if they were a performance bottleneck for MD5.  */
+   surprised if they were a performance bottleneck for MD5. */
 
 static uint32
 getu32 (addr)
-     const unsigned char *addr;
+	const unsigned char *addr;
 {
 	return (((((unsigned long)addr[3] << 8) | addr[2]) << 8)
 		| addr[1]) << 8 | addr[0];
@@ -46,8 +46,8 @@ getu32 (addr)
 
 static void
 putu32 (data, addr)
-     uint32 data;
-     unsigned char *addr;
+		uint32 data;
+		unsigned char *addr;
 {
 	addr[0] = (unsigned char)data;
 	addr[1] = (unsigned char)(data >> 8);
@@ -56,12 +56,12 @@ putu32 (data, addr)
 }
 
 /*
- * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
+ * Start MD5 accumulation. Set bit count to 0 and buffer to mysterious
  * initialization constants.
  */
 void
 MD5Init(ctx)
-     struct MD5Context *ctx;
+		struct MD5Context *ctx;
 {
 	ctx->buf[0] = 0x67452301;
 	ctx->buf[1] = 0xefcdab89;
@@ -78,9 +78,9 @@ MD5Init(ctx)
  */
 void
 MD5Update(ctx, buf, len)
-     struct MD5Context *ctx;
-     unsigned char const *buf;
-     unsigned len;
+		struct MD5Context *ctx;
+		unsigned char const *buf;
+		unsigned len;
 {
 	uint32 t;
 
@@ -129,8 +129,8 @@ MD5Update(ctx, buf, len)
  */
 void
 MD5Final(digest, ctx)
-     unsigned char digest[16];
-     struct MD5Context *ctx;
+		unsigned char digest[16];
+		struct MD5Context *ctx;
 {
 	unsigned count;
 	unsigned char *p;
@@ -138,7 +138,7 @@ MD5Final(digest, ctx)
 	/* Compute number of bytes mod 64 */
 	count = (ctx->bits[0] >> 3) & 0x3F;
 
-	/* Set the first char of padding to 0x80.  This is safe since there is
+	/* Set the first char of padding to 0x80. This is safe since there is
 	   always at least one byte free */
 	p = ctx->in + count;
 	*p++ = 0x80;
@@ -148,7 +148,7 @@ MD5Final(digest, ctx)
 
 	/* Pad out to 56 mod 64 */
 	if (count < 8) {
-		/* Two lots of padding:  Pad the first block to 64 bytes */
+		/* Two lots of padding: Pad the first block to 64 bytes */
 		memset(p, 0, count);
 		MD5Transform(ctx->buf, ctx->in);
 
@@ -187,13 +187,13 @@ MD5Final(digest, ctx)
 
 /*
  * The core of the MD5 algorithm, this alters an existing MD5 hash to
- * reflect the addition of 16 longwords of new data.  MD5Update blocks
+ * reflect the addition of 16 longwords of new data. MD5Update blocks
  * the data and converts bytes into longwords for this routine.
  */
 void
 MD5Transform(buf, inraw)
-     uint32 buf[4];
-     const unsigned char inraw[64];
+		uint32 buf[4];
+		const unsigned char inraw[64];
 {
 	register uint32 a, b, c, d;
 	uint32 in[16];
@@ -283,8 +283,8 @@ MD5Transform(buf, inraw)
 #endif
 
 #ifdef TEST
-/* Simple test program.  Can use it to manually run the tests from
-   RFC1321 for example.  */
+/* Simple test program. Can use it to manually run the tests from
+   RFC1321 for example. */
 #include <stdio.h>
 
 int

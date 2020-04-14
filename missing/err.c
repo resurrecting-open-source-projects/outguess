@@ -93,7 +93,6 @@ warnx(const char *fmt, ...)
 	va_start(ap, fmt);
 	if (fmt != NULL)
 		(void)vfprintf(stderr, fmt, ap);
-        (void)fprintf(stderr, "\n");
+	(void)fprintf(stderr, "\n");
 	va_end(ap);
 }
-
