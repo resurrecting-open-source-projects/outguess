@@ -160,7 +160,7 @@ read_pnm(FILE *fin)
 {
 	image *image;
 	char magic[10];
-	int i, v;
+	int v;
 
 	image = checkedmalloc(sizeof(*image));
 	memset(image, 0, sizeof(*image));
@@ -223,7 +223,7 @@ read_pnm(FILE *fin)
 	switch (magic[1]) {
 	case '2': /* PGM ASCII */
 	case '3': /* PPM ASCII */
-		for (i = 0; i < image->x * image->y * image->depth; i++) {
+		for (size_t i = 0; i < image->x * image->y * image->depth; i++) {
 			skip_white(fin);
 			fscanf(fin, "%d", &v);
 			if (v < 0 || v > image->max) {
