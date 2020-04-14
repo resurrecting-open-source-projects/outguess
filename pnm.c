@@ -2,6 +2,7 @@
  * Copyright (C) 1999-2001, Niels Provos <provos@citi.umich.edu>
  * Copyright (C) 2016, Chris Rorvick <chris@rorvick.com>
  * Copyright (C) 2016, Joao Eriberto Mota Filho <eriberto@debian.org>
+ * Copyright (C) 2020, Robin Vobruba <hoijui.quaero@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 1994, Robert Morelos-Zaragoza
+ * Copyright (C) 2020, Robin Vobruba <hoijui.quaero@gmail.com>
  * All rights reserved.
  *
  * File:    golay23.c
