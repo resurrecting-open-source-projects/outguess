@@ -17,8 +17,6 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
-# Checks for libraries.
-
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h malloc.h netinet/in.h stddef.h stdlib.h string.h strings.h unistd.h])
 
