@@ -16,7 +16,7 @@ jobs:
            ./configure
            make
            sudo make install
-           sudo make uninstall
+           #sudo make uninstall
            make clean
     - name: second_build
       run: |
