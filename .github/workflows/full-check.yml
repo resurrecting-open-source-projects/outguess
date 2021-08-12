@@ -27,7 +27,7 @@ jobs:
            sudo make install
     - name: run_program
       run: |
-           outguess
+           outguess 2>&1 | egrep -A 20 OutGuess
     - name: test_program
       run: |
            cd test
