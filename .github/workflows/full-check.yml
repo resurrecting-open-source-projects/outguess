@@ -28,7 +28,12 @@ jobs:
     - name: run_program
       run: |
            outguess 2>&1 | egrep -A 20 OutGuess
-    - name: test_program
+    - name: test_outguess
       run: |
            cd test
            ./test.sh
+    - name: test_seek_script
+      run: |
+           cd test
+           seek_script | grep "Best data" || { echo ERROR; exit 1; }
+           rm out.jpg
