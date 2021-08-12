@@ -17,7 +17,7 @@ jobs:
            make
            sudo make install
            sudo make uninstall
-           make clean 
+           make clean
     - name: second_build
       run: |
            autoreconf -fi
@@ -28,3 +28,7 @@ jobs:
     - name: run_program
       run: |
            outguess
+    - name: test_program
+      run: |
+           cd test
+           ./test.sh
