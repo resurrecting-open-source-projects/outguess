@@ -31,7 +31,7 @@ endif
 
 outguess_LDADD = jpeg-6b-steg/libjpeg.a -lm
 
-CLEANFILES = jpeg-6b-steg/*.o jpeg-6b-steg/jconfig.h jpeg-6b-steg/libjpeg.a
+CLEANFILES = jpeg-6b-steg/*.o jpeg-6b-steg/libjpeg.a
 
 histogram_SOURCES = histogram.c
 
