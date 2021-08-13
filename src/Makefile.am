@@ -10,7 +10,7 @@
 ./jpeg-6b-steg/libjpeg.a:
 	$(MAKE) -C ./jpeg-6b-steg -f makefile.ansi 'CC=$(CC)' CFLAGS+=-DHAVE_STDC_HEADERS libjpeg.a
 
-bin_PROGRAMS = outguess
+bin_PROGRAMS = outguess histogram
 
 outguess_DEPENDENCIES = ./jpeg-6b-steg/libjpeg.a
 
@@ -32,6 +32,8 @@ endif
 outguess_LDADD = jpeg-6b-steg/libjpeg.a -lm
 
 CLEANFILES = jpeg-6b-steg/*.o jpeg-6b-steg/jconfig.h jpeg-6b-steg/libjpeg.a
+
+histogram_SOURCES = histogram.c
 
 # Install seek_script
 dist_bin_SCRIPTS = seek_script
