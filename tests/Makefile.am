@@ -1,1 +1,1 @@
-TESTS = test.sh
+TESTS = embed_extract.sh
