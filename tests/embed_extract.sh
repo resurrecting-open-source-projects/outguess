@@ -6,11 +6,11 @@
 
 # Write message
 echo -e "\nEmbedding a message..."
-outguess -k "secret-key-001" -d message.txt test.jpg test-with-message.jpg
+../src/outguess -k "secret-key-001" -d message.txt test.jpg test-with-message.jpg
 
 # Retrieve message
 echo -e "\nExtracting a message..."
-outguess -k "secret-key-001" -r test-with-message.jpg text.txt
+../src/outguess -k "secret-key-001" -r test-with-message.jpg text.txt
 cat text.txt | grep "inside of the image" || { echo ERROR; exit 1; }
 
 # Remove files

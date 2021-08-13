@@ -8,5 +8,4 @@
 
 echo "This is my test" > /tmp/fortune
 
-seek_script | grep "Best data" || { echo ERROR; exit 1; }
-rm out.jpg
+../src/seek_script | grep "Best data" || { echo ERROR; exit 1; }
