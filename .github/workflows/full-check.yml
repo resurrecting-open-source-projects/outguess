@@ -11,18 +11,18 @@ jobs:
     - uses: actions/checkout@v2
     - name: first_build
       run: |
-           autoreconf -fi
-           cp jpeg-6b-steg/jconfig.cfg jpeg-6b-steg/jconfig.h
-           ./configure
+           ./autogen.sh
+           ./configure --with-generic-jconfig
+           make
+           make clean
            make
            sudo make install
-           #sudo make uninstall
-           make clean
+           sudo make uninstall
+           make distclean
     - name: second_build
       run: |
-           autoreconf -fi
-           cp jpeg-6b-steg/jconfig.cfg jpeg-6b-steg/jconfig.h
-           ./configure
+           ./autogen.sh
+           ./configure --with-generic-jconfig
            make
            sudo make install
     - name: run_program
@@ -30,10 +30,4 @@ jobs:
            outguess 2>&1 | egrep -A 20 OutGuess
     - name: test_outguess
       run: |
-           cd test
-           ./test.sh
-    - name: test_seek_script
-      run: |
-           cd test
-           seek_script | grep "Best data" || { echo ERROR; exit 1; }
-           rm out.jpg
+           make check
