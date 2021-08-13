@@ -17,6 +17,18 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
+# Check for jconfig.h in jpeg dir
+jpegdir="src/jpeg-6b-steg"
+
+AC_ARG_WITH([generic-jconfig],
+            [Use a default jconfig.h in src/{jpegdir}],
+            AC_CONFIG_COMMANDS([jconfig.h], [cd $jpegdir; cp jconfig.cfg jconfig.h], [jpegdir=$jpegdir]),
+            AC_CHECK_FILE([$jpegdir]/jconfig.h, [],
+                AC_MSG_ERROR(m4_normalize([Could not find jconfig.h in [$jpegdir]/.
+                             Please provide a jconfig.h file or pass --with-generic-jconfig
+                             to `configure' command to use a generic file.
+                             See [$jpegdir]/install.doc for details.]))))
+
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h malloc.h netinet/in.h stddef.h stdlib.h string.h strings.h unistd.h])
 
