@@ -61,5 +61,5 @@ if test $neederr = yes; then
 fi
 AM_CONDITIONAL([ERRMISS], [test x$ERRMISS = xtrue])
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
 AC_OUTPUT
