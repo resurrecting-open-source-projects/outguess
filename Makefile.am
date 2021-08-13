@@ -11,6 +11,8 @@ SUBDIRS = src
 man_MANS = man/outguess.1 man/seek_script.1
 
 distclean-local:
-	rm -rf autom4te.cache
+	rm -rf autom4te.cache \
+               conf[a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]
 	rm -f  aclocal.m4 compile config.* configure depcomp install-sh \
-               Makefile.in missing src/Makefile.in
+               Makefile.in missing src/Makefile.in src/jpeg-6b-steg/config.log \
+               src/jpeg-6b-steg/config.status

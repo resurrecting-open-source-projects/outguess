@@ -21,8 +21,6 @@ outguess_SOURCES = outguess.c \
                    jpg.c jpg.h \
                    iterator.c iterator.h
 
-dist_bin_SCRIPTS = seek_script
-
 if MD5MISS
 outguess_SOURCES += md5.c md5.h
 endif
@@ -33,4 +31,7 @@ endif
 
 outguess_LDADD = jpeg-6b-steg/libjpeg.a -lm
 
-CLEANFILES = jpeg-6b-steg/*.o jpeg-6b-steg/libjpeg.a
+CLEANFILES = jpeg-6b-steg/*.o jpeg-6b-steg/jconfig.h jpeg-6b-steg/libjpeg.a
+
+# Install seek_script
+dist_bin_SCRIPTS = seek_script
