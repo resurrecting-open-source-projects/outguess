@@ -31,9 +31,13 @@ endif
 
 outguess_LDADD = jpeg-6b-steg/libjpeg.a -lm
 
-CLEANFILES = jpeg-6b-steg/*.o jpeg-6b-steg/libjpeg.a
-
 histogram_SOURCES = histogram.c
 
 # Install seek_script
 dist_bin_SCRIPTS = seek_script
+
+CLEANFILES = jpeg-6b-steg/*.o jpeg-6b-steg/libjpeg.a
+
+distclean-local:
+	rm -f  src/jpeg-6b-steg/config.log src/jpeg-6b-steg/config.status \
+               src/jpeg-6b-steg/jconfig.h
