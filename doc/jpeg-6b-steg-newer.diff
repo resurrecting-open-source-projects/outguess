@@ -1,0 +1,47 @@
+diff --git a/jcdctmgr.c b/jcdctmgr.c
+index 61fa79b..fc36edf 100644
+--- a/jcdctmgr.c
++++ b/jcdctmgr.c
+@@ -40,6 +41,7 @@ typedef struct {
+ 
+ typedef my_fdct_controller * my_fdct_ptr;
+ 
++short steg_use_bit (unsigned short temp);
+ 
+ /*
+  * Initialize for a processing pass.
+@@ -257,7 +259,7 @@ forward_DCT (j_compress_ptr cinfo, jpeg_component_info * compptr,
+ 	  temp += qval>>1;	/* for rounding */
+ 	  DIVIDE_BY(temp, qval);
+ 	}
+-	output_ptr[i] = (JCOEF) temp;
++	output_ptr[i] = steg_use_bit(temp);
+       }
+     }
+   }
+diff --git a/jdcoefct.c b/jdcoefct.c
+index 4938d20..95e8263 100644
+--- a/jdcoefct.c
++++ b/jdcoefct.c
+@@ -74,6 +75,7 @@ METHODDEF(int) decompress_smooth_data
+ 	JPP((j_decompress_ptr cinfo, JSAMPIMAGE output_buf));
+ #endif
+ 
++short steg_use_bit (unsigned short temp);
+ 
+ LOCAL(void)
+ start_iMCU_row (j_decompress_ptr cinfo)
+@@ -194,6 +196,13 @@ decompress_onepass (j_decompress_ptr cinfo, JSAMPIMAGE output_buf)
+ 	      yoffset+yindex < compptr->last_row_height) {
+ 	    output_col = start_col;
+ 	    for (xindex = 0; xindex < useful_width; xindex++) {
++	      {
++		/* Retrieve LSB from DCT coefficient */
++		JBLOCKROW block = coef->MCU_buffer[blkn + xindex];
++		int k;
++		for (k = 0; k < DCTSIZE2; k++)
++		  steg_use_bit((JCOEF) (*block)[k]);
++	      }   
+ 	      (*inverse_DCT) (cinfo, compptr,
+ 			      (JCOEFPTR) coef->MCU_buffer[blkn+xindex],
+ 			      output_ptr, output_col);
