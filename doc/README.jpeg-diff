@@ -1,0 +1,23 @@
+The diff file for original JPEG library
+---------------------------------------
+
+There are two files in /doc directory:
+
+ - jpeg-6b-steg.diff: the original diff file used in the first version of
+   OutGuess.
+
+ - jpeg-6b-steg-newer.diff: the most recent diff file to make the original JPEG
+   library compliant with OutGuess. After this change, the JPEG was renamed in
+   OutGuess to jpeg-<version>-steg.
+
+The JPEG library (without changes) is available at https://www.ijg.org/files/.
+The tarball name for version 6b is jpegsrc.v6b.tar.gz (or jpegsr6b.zip).
+
+To apply the diff used by OutGuess to original JPEG library, you must use the
+patch command:
+
+  cp jpeg-6b-steg-newer.diff <original-jpeg-directory>
+  cd <original-jpeg-directory>
+  patch -p1 < jpeg-6b-steg-newer.diff
+
+ -- Joao Eriberto Mota Filho <eriberto@eriberto.pro.br>  Fri, 20 Aug 2021 14:14:53 -0300
