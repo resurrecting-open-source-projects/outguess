@@ -1,4 +1,5 @@
 TESTS = embed_extract_jpg.sh \
+        embed_extract_ppm.sh \
         test_seek.sh
 
 distclean-local:
