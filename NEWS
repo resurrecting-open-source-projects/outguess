@@ -1,10 +1,20 @@
+OutGuess 0.3
+------------
+
+This version was fully reorganized. All source files were moved to /src, all
+documents to /doc, etc. The autotools was fully reimplemented from zero. Some
+documents were added and the README was reviewed. Some other improvements were
+added.
+
+ -- Joao Eriberto Mota Filho <eriberto@eriberto.pro.br>  Fri, 10 Aug 2021 18:06:28 -0300
+
 OutGuess 0.2.1
 --------------
 
 The project is alive in GitHub. You are welcome to help.
 
 This version is fully based in 0.2 version. All patches available in Debian
-was applied here. Some fixies from Chris Rorvick[1] also are applied. I did
+was applied here. Some fixes from Chris Rorvick[1] also are applied. I did
 other adjustments too.
 
 [1] https://github.com/crorvick/outguess
@@ -14,6 +24,6 @@ more details here[2]. It is not a problem because we need static library
 libjpeg.a only and we have a alternative Makefile to provide it inside the
 same directory.
 
-[2] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=882538
+[2] https://bugs.debian.org/882538
 
- -- Joao Eriberto Mota Filho <eriberto@debian.org>  Sun, 11 Nov 2018 19:52:23 -0200
+ -- Joao Eriberto Mota Filho <eriberto@eriberto.pro.br>  Sun, 11 Nov 2018 19:52:23 -0200
