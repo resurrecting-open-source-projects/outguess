@@ -1,0 +1,33 @@
+NAME
+ seek_script - script using OutGuess to find an image that yields the best embedding
+
+SYNOPSIS
+ seek_script [param for outguess]
+
+DESCRIPTION
+ The seek_script scans the current directory to find the best JPEG file in
+ which hide the message that resides in /tmp/fortune. At the end, the script
+ will print the best and the worst JPEG file in which to put the message.
+
+LIMITATIONS
+ seek_script works only for JPEG images.
+
+FILES
+ /tmp/fortune  File containing the message to be used by OutGuess after the
+               test.
+
+SEE ALSO
+ outguess(1)
+
+ACKNOWLEDGEMENTS
+ This product includes software developed by Ian F. Darwin and others.
+
+AUTHOR
+ The seek_script utility is part of OutGuess. OutGuess was originally developed
+ by Niels Provos <provos@citi.umich.edu> and is maintained by some people.
+
+ This manual page was written by Samuele Giovanni Tonon <samu@debian.org> for
+ the Debian Project (but may be used by others).
+
+ Currently, source code and newer versions are available at
+ https://github.com/resurrecting-open-source-projects/outguess

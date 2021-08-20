@@ -1,0 +1,100 @@
+NAME
+ outguess - universal steganographic tool
+
+SYNOPSIS
+ outguess [OPTIONS] inputfile outputfile
+
+DESCRIPTION
+ OutGuess is a universal steganographic tool that allows the insertion of
+ hidden information into the redundant bits of data sources. The nature of the
+ data source is irrelevant to the core of OutGuess. The program relies on data
+ specific handlers that will extract redundant bits and write them back after
+ modification. Currently only the PPM, PNM, and JPEG image formats are
+ supported, although OutGuess could use any kind of data, as long as a handler
+ were provided.
+
+ OutGuess uses a generic iterator object to select which bits in the data
+ should be modified. A seed can be used to modify the behavior of the iterator.
+ It is embedded in the data along with the rest of the message. By altering the
+ seed, OutGuess tries to find a sequence of bits that minimizes the number of
+ changes in the data that have to be made.
+
+ A bias is introduced that favors the modification of bits that were extracted
+ from a high value, and tries to avoid the modification of bits that were
+ extracted from a low value.
+
+ Additionally, OutGuess allows for the hiding of two distinct messages in the
+ data, thus providing plausible deniability. It keeps track of the bits that
+ have been modified previously and locks them. A (23,12,7) Golay code is used
+ for error correction to tolerate collisions on locked bits. Artificial errors
+ are introduced to avoid modifying bits that have a high bias.
+
+OPTIONS
+ The following command line options, when specified as capital letters,
+ indicate options for the second message.
+
+ -F [+-]         Specifies that OutGuess should preserve statistics based on
+                 frequency counts. As a result, no statistical test that is
+                 based on frequency counts will be able to detect
+                 steganographic content. This option is set as on by default.
+ -kK <key>       Specify the secret key used to encrypt and hide the message in
+                 the provided data.
+ -dD <datafile>  Specify the filename containing a message to be hidden in the
+                 data.
+ -sS <seed>      Specify the initial seed the iterator object uses for selecting
+                 bits in the redundant data. If no upper limit is specified, the
+                 iterator will use this seed without searching for a more
+                 optimal embedding.
+ -iI <limit>     Specify the upper limit for finding an optimal iterator seed.
+                 The maximum value for the limit is 65535.
+ -eE             Use error correction for data encoding and decoding.
+
+ Other options that apply to the general execution of OutGuess:
+
+ -r            Retrieve a message from a data object. If this option is not
+               specified, OutGuess will embed messages.
+ -x <maxkeys>  If the second key does not create an iterator object that is
+               successful in embedding the data, the program will derive up to
+               specified number of new keys.
+ -p param      Passes a string as parameter to the destination data handler.
+               For the JPEG image format, this is the compression quality, it
+               can take values between 75 and 100. The higher the quality the
+               more bits to hide a message in the data are available.
+ -m            Mark pixels that have been modified.
+ -t            Collect statistics about redundant bit usage. Repeated use
+               increases output level.
+
+ For embedding messages, you need to specify a source and a destination
+ filename. OutGuess determines the data format by the filename extension. If no
+ filenames are specified OutGuess operates as a filter and assumes the PPM data
+ format.
+
+EXAMPLES
+ To embed the message hidden.txt into the monkey.jpg image:
+
+    $ outguess -k "my secret pass phrase" -d hidden.txt monkey.jpg out.jpg
+
+ And in the other direction:
+
+    $ outguess -k "my secret pass phrase" -r out.jpg message.txt
+
+ will retrieve the hidden message from the image.
+
+ If you want to embed a second message, use:
+
+    $ outguess -k "secret1" -d hide1.txt -E -K "secret2" -D hide2.txt monkey.jpg out.jpg
+
+ OutGuess will first embed hide1.txt and then hide2.txt on top of it, using
+ error correcting codes. The second message hide2.txt can be retrieved with
+
+    $ outguess -k "secret2" -e -r out.jpg message.txt
+
+SEE ALSO
+ cjpeg(1), djpeg(1), pnm(5), seek_script(1), stirmark(1)
+
+AUTHOR
+ OutGuess was originally developed by Niels Provos <provos@citi.umich.edu> and
+ is maintained by some people.
+
+ Currently, source code and newer versions are available at
+ https://github.com/resurrecting-open-source-projects/outguess
