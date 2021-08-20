@@ -1,50 +1,38 @@
-# OutGuess 0.2.1
+# OutGuess
 
-> 2018-11-11 - Joao Eriberto Mota Filho <eriberto@eriberto.pro.br>,
+#### outguess - universal steganographic tool
 
-fully based on OutGuess 0.2, by
+## What is OutGuess?
 
-> 2001-02-12 - Niels Provos <provos@citi.umich.edu>
+Outguess is a universal steganographic tool that allows the insertion of hidden
+information into the redundant bits of data sources. The nature of the data
+source is irrelevant to the core of outguess. The program relies on data
+specific handlers that will extract redundant bits and write them back after
+modification. Currently only the PPM (Portable Pixel Map), PNM (Portable  Any
+Map), and JPEG image formats are supported, although outguess could use any
+kind of data, as long as a handler were provided.
 
-OutGuess is a universal steganographic tool that allows the insertion
-of hidden information into the redundant bits of data sources. The
-nature of the data source is irrelevant to the core of OutGuess. The
-program relies on data specific handlers that will extract redundant
-bits and write them back after modification. In this version the PNM
-and JPEG image formats are supported. In the next paragraphs, images
-will be used as concrete example of data objects, though OutGuess can
-use any kind of data, as long as a handler is provided.
-
-OutGuess is available under the BSD software license. It is
-completely free for any use including commercial.
-
-Please see each source file for its respective license.
-OutGuess was developed in Germany.
-
-Steganography is the art and science of hiding that communication is
-happening. Classical steganography systems depend on keeping the
-encoding system secret, but modern steganography are detectable only
-if secret information is known, e.g. a secret key. Because of their
-invasive nature steganography systems leave detectable traces within a
-medium's characteristics. This allows an eavesdropper to detect media
-that has been modified, revealing that secret communication is taking
-place. Although the secrecy of the information is not degraded, its
-hidden nature is revealed, defeating the main purpose of
+Steganography is the art and science of hiding that communication is happening.
+Classical steganography systems depend on keeping the encoding system secret,
+but modern steganography are detectable only if secret information is known,
+e.g. a secret key. Because of their invasive nature steganography systems leave
+detectable traces within a medium's characteristics. This allows an
+eavesdropper to detect media that has been modified, revealing that secret
+communication is taking place. Although the secrecy of the information is not
+degraded, its hidden nature is revealed, defeating the main purpose of
 Steganography.
 
-For JPEG images, OutGuess preserves statistics based on frequency
-counts. As a result, no known statistical test is able to detect
-the presence of steganographic content. Before embedding data
-into an image, the OutGuess system can determine the maximum
-message size that can be hidden while still being able to maintain
-statistics based on frequency counts.
+For JPEG images, OutGuess preserves statistics based on frequency counts. As a
+result, no known statistical test is able to detect the presence of
+steganographic content. Before embedding data into an image, the OutGuess
+system can determine the maximum message size that can be hidden while still
+being able to maintain statistics based on frequency counts.
 
-OutGuess uses a generic iterator object to select which bits in the
-data should be modified. A seed can be used to modify the behavior
-of the iterator. It is embedded in the data along with the rest of the
-message. By altering the seed, OutGuess tries to find a sequence of
-bits that minimizes the number of changes in the data that have to be
-made.
+OutGuess uses a generic iterator object to select which bits in the data should
+be modified. A seed can be used to modify the behavior of the iterator. It is
+embedded in the data along with the rest of the message. By altering the seed,
+OutGuess tries to find a sequence of bits that minimizes the number of changes
+in the data that have to be made.
 
 A sample output from OutGuess is as follows:
 
@@ -67,87 +55,98 @@ Storing bitmap into data...
 Writing foil/dscf0001.jpg....
 ```
 
-The simple example script `seek_script` uses OutGuess to select an image
-that fits the data we want to hide the best, yielding the lowest number
-of changed bits. Because we do not care about the actual content of
-the cover data we send, this is a very viable approach.
+The simple example script `seek_script` uses OutGuess to select an image that
+fits the data we want to hide the best, yielding the lowest number of changed
+bits. Because we do not care about the actual content of the cover data we
+send, this is a very viable approach.
 
-Additionally, OutGuess allows to hide multiple messages in the data.
-Thus, it also provides plausible deniability. It keeps track of the
-bits that have been modified previously and locks them. A `(23,12,7)`
-Golay code is used for error correction to tolerate collisions on
-locked bits. Artificial errors are introduced to avoid modifying bits
-that have a high bias.
+Additionally, OutGuess allows to hide multiple messages in the data. Thus, it
+also provides plausible deniability. It keeps track of the bits that have been
+modified previously and locks them. A `(23,12,7)` Golay code is used for error
+correction to tolerate collisions on locked bits. Artificial errors are
+introduced to avoid modifying bits that have a high bias.
 
-This version of OutGuess can insert only two different messages.
-As this is a BETA version, I would like you to give me feedback on
-the usefulness of OutGuess. And if you like it, you can support
-me via the links on
+Currently OutGuess can insert only two different messages. This is an
+experimental feature.
 
-<http://www.outguess.org/>
+## Help this project ##
 
-Note, by Eriberto: all text shown here was originally written by
-Niels Provos for OutGuess =< 0.2. The current site for OutGuess is:
+OutGuess needs your help. **If you are a programmer** and want to help a nice
+project, this is your opportunity.
 
-<https://github.com/eribertomota/outguess>
+The original OutGuess went unmaintained; the source of the last version, 0.2,
+was [imported from Debian](https://snapshot.debian.org/package/outguess/) or other
+repositories of the Internet. After, patches from Debian and elsewhere were
+applied to create the 0.2.1 release. The details of each release are registered
+in the [ChangeLog](ChangeLog) file. Now, OutGuess is maintained by volunteers
+under [Resurrecting Open Source
+Projects](https://github.com/resurrecting-open-source-projects).
 
-## Installation
+If you are interested in helping OutGuess, read the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+## Building
 
 ### Prepare the `jpeg-6b-steg` library
 
-To do so, you need to choose (and potentially edit)
-an appropriate *jconfig.h* file.
-
-To get an idea which one you might want,
-have a look at their header comments.
+To do so, you need to choose (and potentially edit) an appropriate `jconfig.h`
+file. To get an idea which one you might want, have a look at their header
+comments.
 
 You might do so like this (POSIX only):
 
-```bash
-head -n 1 jpeg-6b-steg/jconfig.*
+```
+head -n 1 src/jpeg-6b-steg/jconfig.*
 ```
 
-The default one is `jconfig.cfg`.
-You may use it like this:
+The default one is `jconfig.cfg`. You may use it like this:
 
-```bash
+```
 cd jpeg-6b-steg
 ln -s jconfig.cfg jconfig.h
 cd ..
 ```
 
-### Build OutGuess
+However, in OutGuess 0.3 or newer, there is the option `--with-generic-jconfig`
+that will use `jconfig.cfg` automatically. See the *Build and install OutGuess*
+section below.
+
+### Build and install OutGuess
 
 OutGuess has only been tested on OpenBSD, Linux, Solaris and AIX.
 
-#### Supported Systems
+If you manually edited `jconfig.h`, you must use the following command
+sequence:
 
-OutGuess has been modified to use autoconf.
-A normal installation should require only:
+```
+./autogen.sh
+./configure
+make
+make install
+```
 
-1. `./configure && make`
+Otherwise, if you prefer to use `jconfig.cfg` content as default for
+`jconfig.h`, without a manual action, you can use the following sequence:
 
-There is an optimization bug in `gcc`,
-so you might have to compile with `-O0`.
+```
+./autogen.sh
+./configure --with-generic-jconfig
+make
+make install
+```
 
-#### Unsupported Systems
+## Embedded modified JPEG library
 
-If your system is not supported, try building by hand as follows:
+OutGuess needs a modified version of the JPEG library. Currently, the original
+lib (without changes) is available at https://www.ijg.org/files/. The tarball
+name for version 6b is `jpegsrc.v6b.tar.gz` (or `jpegsr6b.zip`).
 
-1. Install the *JPEG-6b* `libjpeg.a` library and patch it with
-   `jpeg-6b-steg.diff`. You can obtain the source from
-   <ftp://ftp.uu.net/graphics/jpeg/jpegsrc.v6b.tar.gz>.
-   The Makefile expects the library to be at `../jpeg-6b`.
+There is a complete document about the JPEG in
+`src/jpeg-<version>-steg/install.doc` in OutGuess source code (this is plain
+text, not a traditional
+*.doc*).
 
-   > **NOTE** (by Eriberto)\
-   > Currently, the jpeg-6b can be found at\
-   > <https://www.ijg.org/files/>
-
-2. Edit the `Makefile` and type `make`
-
-## BUGS
-
-None known at the moment.
+The .diff file used to modify the original JPEG library is available at `/doc`
+in OutGuess source code.
 
 ## Acknowledgments
 
@@ -155,17 +154,26 @@ OutGuess uses code from the following projects.
 Attributions can also be found in the sources.
 
 * Markus Kuhn's Stirmark software,
-  see [STIRMARK-README](STIRMARK-README)
+  see [doc/STIRMARK-README](STIRMARK-README)
 * the Independent JPEG Group's JPEG software,
-  see [jpeg-6b-steg/README](jpeg-6b-steg/README)
-* the Arc4 random number generator for OpenBSD, (c) 1996 by
-  _David Mazieres <dm@lcs.mit.edu>_
+  see [src/jpeg-6b-steg/README](src/jpeg-6b-steg/README)
+* the Arc4 random number generator for OpenBSD, (C) 1996 by
+  David Mazieres <dm@lcs.mit.edu>
 * free MD5 code by Colin Plumb
 
 For determining the redundant bits out of a JPEG image,
-the `jpeg-jsteg-v4` patches by _Derek Upham <upham@cs.ubc.ca>_ were helpful.
+the `jpeg-jsteg-v4` patches by Derek Upham <upham@cs.ubc.ca> were helpful.
 
 Thanks to:
 
-* _Dug Song <dugsong@monkey.org>_ for helping with configure,
-* _Andrew Reiter <andrewr@rot26.net>_ for testing on Solaris.
+* Dug Song <dugsong@monkey.org> for helping with the original configure file,
+* Andrew Reiter <andrewr@rot26.net> for testing on Solaris.
+
+## Author ##
+
+OutGuess was originally developed by Niels Provos <provos@citi.umich.edu>,
+under the BSD software license. It is completely free for any use including
+commercial.
+
+Currently, source code is maintained by volunteers. Newer versions are
+available at https://github.com/resurrecting-open-source-projects/outguess
