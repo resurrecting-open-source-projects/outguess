@@ -1,4 +1,4 @@
-TESTS = embed_extract.sh \
+TESTS = embed_extract_jpg.sh \
         test_seek.sh
 
 distclean-local:
