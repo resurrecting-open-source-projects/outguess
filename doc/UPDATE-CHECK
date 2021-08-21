@@ -4,9 +4,9 @@ When updating, change the following files (if needed):
 - Update changeLog
 - Check for spelling errors in ChangeLog, manpage and README.
 - Check final manpage with man command.
-- man/create-man.sh (DATE, version)
 - Generate a new manpage.
-- README
+- man/create-man.sh (DATE, version)
+- Updated or check README
 - configure.ac (VERSION)
-- outguess.c: char version[]
+- src/outguess.c: char version[] (VERSION and date)
 - Test in Debian Sid
