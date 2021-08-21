@@ -28,6 +28,7 @@ jobs:
     - name: run_program
       run: |
            outguess 2>&1 | egrep -A 20 OutGuess
+           outguess -h 2>&1 | egrep -A 20 OutGuess
     - name: test_outguess
       run: |
            sudo make uninstall

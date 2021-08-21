@@ -63,6 +63,7 @@ OPTIONS
  -m            Mark pixels that have been modified.
  -t            Collect statistics about redundant bit usage. Repeated use
                increases output level.
+ -h            Print a usage help text and exit.
 
  For embedding messages, you need to specify a source and a destination
  filename. OutGuess determines the data format by the filename extension. If no
