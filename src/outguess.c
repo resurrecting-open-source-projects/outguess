@@ -778,7 +778,7 @@ munmap_file(u_char *data, int len)
 int
 main(int argc, char **argv)
 {
-	char version[] = "OutGuess 0.2.1 Universal Stego 1999-2018 Niels Provos and others";
+	char version[] = "OutGuess 0.3 Universal Stego 1999-2021 Niels Provos and others";
 	char usage[] = "%s\n\n%s [options] [<input file> [<output file>]]\n"
 		"\t-h           print this usage help text and exit\n"
 		"\t-[sS] <n>    iteration start, capital letter for 2nd dataset\n"
