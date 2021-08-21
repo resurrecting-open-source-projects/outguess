@@ -1,7 +1,7 @@
 #!/bin/sh
 # A very simple script using OutGuess to find an image that yields
 # the best embedding.
-# Copyright (C) 1999, Niels Provos <provos@citi.umich.edu>
+# Copyright 1999 Niels Provos <provos@citi.umich.edu>
 FILES=*.jpg
 MESSAGE=/tmp/fortune
 TMPNAME="out.$$.jpg"

@@ -43,7 +43,7 @@
  * obtain my written permission. Any modification of this program is covered
  * by this copyright.
  *
- * ==   Copyright (c) 1994  Robert Morelos-Zaragoza. All rights reserved.   ==
+ * ==   Copyright 1994  Robert Morelos-Zaragoza. All rights reserved.   ==
  */
 
 /* 12-bit of data gets encoded into 23-bit of something. */

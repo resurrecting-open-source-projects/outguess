@@ -2,6 +2,7 @@
  * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
  * Copyright 2016      Chris Rorvick <chris@rorvick.com>
  * Copyright 2016      Joao Eriberto Mota Filho <eriberto@debian.org>
+ * Copyright 2020      Robin Vobruba <hoijui.quaero@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +34,7 @@
 /* This source code is derived in parts from
  *   StirMark -- Experimental watermark resilience testkit
  *   Markus Kuhn <mkuhn@acm.org>, University of Cambridge
- *   Copyright (c) 1997 Markus Kuhn <mkuhn@acm.org>
+ *   Copyright 1997 Markus Kuhn <mkuhn@acm.org>
  */
 
 #include <sys/types.h>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

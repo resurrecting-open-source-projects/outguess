@@ -3,9 +3,9 @@
  *
  * Adapted from OpenBSD libc *err* *warn* code.
  *
- * Copyright (c) 2000 Dug Song <dugsong@monkey.org>
+ * Copyright 2000 Dug Song <dugsong@monkey.org>
  *
- * Copyright (c) 1993
+ * Copyright 1993
  *	The Regents of the University of California.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

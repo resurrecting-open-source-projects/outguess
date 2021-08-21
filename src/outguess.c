@@ -1,10 +1,11 @@
 /*
- * Outguess - a Universal Steganograpy Tool for
+ * Outguess - Universal Steganograpy Tool
  *
  * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
  * Copyright 2002      Samuele Giovanni Tonon <samu@debian.org>
  * Copyright 2016      Joao Eriberto Mota Filho <eriberto@debian.org>
  * Copyright 2017      Chris Rorvick <chris@rorvick.com>
+ * Copyright 2020      Robin Vobruba <hoijui.quaero@gmail.com>
  * Features
  * - preserves frequency count based statistics
  * - multiple data embedding
@@ -14,7 +15,7 @@
  */
 
 /*
- * Copyright (c) 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -777,7 +778,7 @@ munmap_file(u_char *data, int len)
 int
 main(int argc, char **argv)
 {
-	char version[] = "OutGuess 0.2.1 Universal Stego (C) 1999-2018 Niels Provos and others";
+	char version[] = "OutGuess 0.2.1 Universal Stego 1999-2018 Niels Provos and others";
 	char usage[] = "%s\n\n%s [options] [<input file> [<output file>]]\n"
 		"\t-h           print this usage help text and exit\n"
 		"\t-[sS] <n>    iteration start, capital letter for 2nd dataset\n"
