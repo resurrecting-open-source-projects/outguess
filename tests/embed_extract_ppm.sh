@@ -10,8 +10,8 @@ echo -e "\nEmbedding a message..."
 
 # Retrieve message
 echo -e "\nExtracting a message..."
-../src/outguess -k "secret-key-001" -r test-with-message.ppm text.txt
-cat text.txt | grep "inside of the image" || { echo ERROR; exit 1; }
+../src/outguess -k "secret-key-001" -r test-with-message.ppm text-ppm.txt
+cat text-ppm.txt | grep "inside of the image" || { echo ERROR; exit 1; }
 
 # Remove files
-rm -f test-with-message.ppm text.txt
+rm -f test-with-message.ppm text-ppm.txt
