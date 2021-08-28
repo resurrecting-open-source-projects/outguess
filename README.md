@@ -164,8 +164,10 @@ Attributions can also be found in the sources.
 For determining the redundant bits out of a JPEG image,
 the `jpeg-jsteg-v4` patches by Derek Upham <upham@cs.ubc.ca> were helpful.
 
-Thanks to:
+Special thanks to:
 
+* Robert Morelos-Zaragoza <morelos_zaragoza@yahoo.com>, author of golay.c,
+  that gently agreed to change its licensing to BSD.
 * Dug Song <dugsong@monkey.org> for helping with the original configure file,
 * Andrew Reiter <andrewr@rot26.net> for testing on Solaris.
 

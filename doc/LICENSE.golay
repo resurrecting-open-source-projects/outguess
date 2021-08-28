@@ -1,0 +1,16 @@
+golay.c was developed by Robert Morelos-Zaragoza in 1994.
+
+The original licensing of golay.c was:
+
+ This computer program is free for non-commercial purposes.
+ You may implement this program for any non-commercial application. You may
+ also implement this program for commercial purposes, provided that you
+ obtain my written permission. Any modification of this program is covered
+ by this copyright.
+
+ ==   Copyright 1994  Robert Morelos-Zaragoza. All rights reserved.   ==
+
+Considering the modern times, Robert gently agreed to change the licensing to
+BSD. This agreement was sent via email message on 26 Aug 2021 to me (Eriberto).
+
+Thanks Robert!
