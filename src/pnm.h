@@ -1,5 +1,6 @@
 /*
  * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
+ * Copyright 2021      Daniel T. Borelli <daltomi@disroot.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,6 +53,7 @@ typedef struct _image {
 
 typedef struct _handler {
 	char *extension;				/* Extension name */
+	char *extension_alternative;		/* Extension name */
 	void (*init)(char *);
 	image *(*read)(FILE *);
 	void (*write)(FILE *, image *);

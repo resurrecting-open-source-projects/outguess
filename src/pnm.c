@@ -3,6 +3,7 @@
  * Copyright 2016      Chris Rorvick <chris@rorvick.com>
  * Copyright 2016      Joao Eriberto Mota Filho <eriberto@debian.org>
  * Copyright 2020      Robin Vobruba <hoijui.quaero@gmail.com>
+ * Copyright 2021      Daniel T. Borelli <daltomi@disroot.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,6 +52,7 @@
 
 handler pnm_handler = {
 	"ppm",
+	"pnm",
 	init_pnm,
 	read_pnm,
 	write_pnm,

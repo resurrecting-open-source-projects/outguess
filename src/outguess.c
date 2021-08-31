@@ -6,6 +6,7 @@
  * Copyright 2016      Joao Eriberto Mota Filho <eriberto@debian.org>
  * Copyright 2017      Chris Rorvick <chris@rorvick.com>
  * Copyright 2020      Robin Vobruba <hoijui.quaero@gmail.com>
+ * Copyright 2021      Daniel T. Borelli <daltomi@disroot.org>
  * Features
  * - preserves frequency count based statistics
  * - multiple data embedding
@@ -104,9 +105,13 @@ get_handler(char *name)
 		return NULL;
 	name++;
 
-	for (i = sizeof(handlers)/sizeof(handler *) - 1; i >= 0; i--)
+	for (i = sizeof(handlers)/sizeof(handler *) - 1; i >= 0; i--) {
 		if (!strcasecmp(name, handlers[i]->extension))
 			return handlers[i];
+		else if (handlers[i]->extension_alternative)
+			if (!strcasecmp(name, handlers[i]->extension_alternative))
+				return handlers[i];
+	}
 
 	return NULL;
 }

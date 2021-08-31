@@ -2,6 +2,7 @@
  * Copyright 1999-2001 Niels Provos <provos@citi.umich.edu>
  * Copyright 2016      Joao Eriberto Mota Filho <eriberto@debian.org>
  * Copyright 2020      Robin Vobruba <hoijui.quaero@gmail.com>
+ * Copyright 2021      Daniel T. Borelli <daltomi@disroot.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,6 +56,7 @@ void jpeg_dummy_dest (j_compress_ptr cinfo);
 
 handler jpg_handler = {
 	"jpg",
+	NULL,
 	init_JPEG_handler,
 	read_JPEG_file,
 	write_JPEG_file,
