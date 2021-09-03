@@ -1,3 +1,17 @@
+OutGuess 0.4
+------------
+2021-09-02 - Joao Eriberto Mota Filho <eriberto@eriberto.pro.br>
+
+   [ Daniel T. Borelli ]
+
+ - Fixed 'Unknown data type' for .pnm files.
+
+   [ Joao Eriberto Mota Filho ]
+
+ - Clarified licensing for src/golay.c. Many thanks to Robert Morelos-Zaragoza.
+   See details in doc/LICENSE.golay.
+ - Enabled CI test for .pnm files.
+
 OutGuess 0.3
 ------------
 2021-08-20 - Joao Eriberto Mota Filho <eriberto@eriberto.pro.br>
