@@ -4,7 +4,7 @@ dnl
 dnl This file is under the same license of the outguess.
 
 AC_PREREQ([2.69])
-AC_INIT([outguess],[0.3],[https://github.com/resurrecting-open-source-projects/outguess/issues])
+AC_INIT([outguess],[0.4],[https://github.com/resurrecting-open-source-projects/outguess/issues])
 AC_CONFIG_SRCDIR([src/golay.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
