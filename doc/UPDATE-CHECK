@@ -3,9 +3,9 @@ When updating, change the following files (if needed):
 - Update rights
 - Update changeLog
 - Check for spelling errors in ChangeLog, manpage and README.
-- Check final manpage with man command.
+- Update man/create-man.sh (DATE, version)
 - Generate a new manpage.
-- man/create-man.sh (DATE, version)
+- Check final manpage with man command.
 - Updated or check README
 - configure.ac (VERSION)
 - src/outguess.c: char version[] (VERSION and date)
